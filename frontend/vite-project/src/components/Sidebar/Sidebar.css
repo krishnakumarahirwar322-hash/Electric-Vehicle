@@ -1,0 +1,240 @@
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 240px;
+  height: 100vh;
+
+  background: #ffffff;
+
+  border-right: 1px solid #e7e7e7;
+
+  padding: 28px 18px;
+
+  display: flex;
+  flex-direction: column;
+
+  z-index: 1000;
+}
+
+
+/* =========================
+   LOGO
+========================= */
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 0 8px;
+
+  margin-bottom: 45px;
+}
+
+.logo-box {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 11px;
+
+  background: #079b70;
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.logo-text h2 {
+  font-size: 18px;
+
+  color: #202124;
+
+  line-height: 20px;
+}
+
+.logo-text span {
+  font-size: 12px;
+
+  color: #888888;
+}
+
+
+/* =========================
+   SIDEBAR MENU
+========================= */
+
+.sidebar-menu {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.sidebar-link {
+  height: 46px;
+
+  padding: 0 13px;
+
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  text-decoration: none;
+
+  color: #707070;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  transition: 0.2s;
+}
+
+.sidebar-link:hover {
+  background: #eef8f4;
+
+  color: #079b70;
+}
+
+.sidebar-link.active {
+  background: #e2f5ee;
+
+  color: #079b70;
+
+  font-weight: 600;
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+.sidebar-profile {
+  margin-top: auto;
+
+  padding: 14px 8px;
+
+  border-top: 1px solid #eeeeee;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.profile-avatar {
+  width: 36px;
+  height: 36px;
+
+  border-radius: 50%;
+
+  background: #dff4ec;
+
+  color: #079b70;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+}
+
+.sidebar-profile h4 {
+  font-size: 13px;
+
+  color: #333333;
+}
+
+.sidebar-profile p {
+  font-size: 11px;
+
+  color: #888888;
+
+  margin-top: 2px;
+}
+
+
+/* =========================
+   MOBILE NAVIGATION
+========================= */
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+
+/* =========================
+   TABLET / MOBILE
+========================= */
+
+@media (max-width: 900px) {
+
+  .admin-sidebar {
+    display: none;
+  }
+
+  .mobile-bottom-nav {
+    position: fixed;
+
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    height: 64px;
+
+    background: #ffffff;
+
+    border-top: 1px solid #e7e7e7;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-around;
+
+    z-index: 2000;
+  }
+
+  .mobile-nav-link {
+    flex: 1;
+
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 3px;
+
+    text-decoration: none;
+
+    color: #777777;
+
+    font-size: 9px;
+
+    font-weight: 500;
+  }
+
+  .mobile-nav-link.active {
+    color: #079b70;
+
+    font-weight: 600;
+  }
+}

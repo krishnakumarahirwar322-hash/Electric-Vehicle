@@ -1,0 +1,200 @@
+/* =========================================
+   RIDE MANAGEMENT PAGE
+========================================= */
+
+.ride-management-page {
+  min-height: 100vh;
+
+  background: #ffffff;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.rides-header {
+  height: 104px;
+
+  padding: 45px 34px 15px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e8e8e8;
+}
+
+
+.rides-header h1 {
+  margin: 0;
+
+  font-size: 25px;
+
+  line-height: 29px;
+
+  font-weight: 700;
+
+  color: #202124;
+}
+
+
+.rides-header p {
+  margin: 4px 0 0;
+
+  font-size: 13px;
+
+  line-height: 16px;
+
+  color: #777777;
+}
+
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+.rides-empty-state {
+  min-height: calc(100vh - 104px);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: flex-start;
+
+  padding-top: 51px;
+
+  background: #ffffff;
+}
+
+
+.rides-empty-state p {
+  margin: 0;
+
+  font-size: 13px;
+
+  line-height: 18px;
+
+  color: #666666;
+}
+
+
+/* =========================================
+   DESKTOP
+========================================= */
+
+@media (min-width: 901px) {
+
+  .ride-management-page {
+    background: #f8f9f8;
+
+    min-height: 100vh;
+  }
+
+
+  .rides-header {
+    height: 104px;
+
+    padding: 34px 34px 15px;
+  }
+
+
+  .rides-header h1 {
+    font-size: 26px;
+  }
+
+
+  .rides-header p {
+    font-size: 13px;
+  }
+
+
+  .rides-empty-state {
+    min-height: calc(100vh - 104px);
+
+    background: #f8f9f8;
+
+    padding-top: 55px;
+  }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 900px) {
+
+  .ride-management-page {
+    min-height: calc(100vh - 64px);
+
+    padding-bottom: 64px;
+
+    background: #ffffff;
+  }
+
+
+  .rides-header {
+    height: 104px;
+
+    padding: 45px 17px 15px;
+  }
+
+
+  .rides-header h1 {
+    font-size: 23px;
+
+    line-height: 27px;
+  }
+
+
+  .rides-header p {
+    margin-top: 3px;
+
+    font-size: 11px;
+
+    line-height: 15px;
+  }
+
+
+  .rides-empty-state {
+    min-height: calc(100vh - 168px);
+
+    padding-top: 50px;
+
+    background: #ffffff;
+  }
+
+
+  .rides-empty-state p {
+    font-size: 12px;
+
+    color: #666666;
+  }
+
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 380px) {
+
+  .rides-header {
+    padding-left: 17px;
+
+    padding-right: 17px;
+  }
+
+
+  .rides-header h1 {
+    font-size: 22px;
+  }
+
+
+  .rides-header p {
+    font-size: 11px;
+  }
+
+}
