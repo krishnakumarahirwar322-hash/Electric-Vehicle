@@ -1,0 +1,264 @@
+/* =================================
+   PAGE
+================================= */
+
+.driver-management-page {
+  min-height: 100vh;
+
+  background: #ffffff;
+
+  padding: 28px 34px 40px;
+}
+
+
+/* =================================
+   HEADER
+================================= */
+
+.drivers-header h1 {
+  font-size: 24px;
+
+  line-height: 28px;
+
+  color: #202124;
+
+  font-weight: 700;
+}
+
+
+.drivers-header p {
+  margin-top: 4px;
+
+  color: #666666;
+
+  font-size: 13px;
+}
+
+
+/* =================================
+   FILTERS
+================================= */
+
+.driver-filters {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 15px;
+
+  margin-bottom: 18px;
+}
+
+
+.driver-filter {
+  border: none;
+
+  background: #f2f2f2;
+
+  color: #444444;
+
+  height: 28px;
+
+  padding: 0 14px;
+
+  border-radius: 18px;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.driver-filter:hover {
+  background: #e7e7e7;
+}
+
+
+.driver-filter.active {
+  background: #079b70;
+
+  color: white;
+}
+
+
+/* =================================
+   DRIVER LIST
+================================= */
+
+.drivers-list {
+  display: grid;
+
+  grid-template-columns: 1fr;
+
+  gap: 11px;
+
+  width: 100%;
+}
+
+
+/* =================================
+   EMPTY STATE
+================================= */
+
+.no-drivers {
+  width: 100%;
+
+  min-height: 160px;
+
+  background: #f4f4f4;
+
+  border-radius: 15px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-direction: column;
+}
+
+
+.no-drivers h3 {
+  font-size: 15px;
+
+  color: #333333;
+}
+
+
+.no-drivers p {
+  margin-top: 5px;
+
+  font-size: 11px;
+
+  color: #888888;
+}
+
+
+/* =================================
+   DESKTOP
+================================= */
+
+@media (min-width: 901px) {
+
+  .driver-management-page {
+    background: #f8f9f8;
+
+    padding: 32px 34px 50px;
+  }
+
+
+  .drivers-header h1 {
+    font-size: 26px;
+  }
+
+
+  .drivers-header p {
+    font-size: 14px;
+  }
+
+
+  .driver-filters {
+    margin-top: 18px;
+
+    margin-bottom: 22px;
+
+    gap: 10px;
+  }
+
+
+  .driver-filter {
+    height: 34px;
+
+    padding: 0 18px;
+
+    font-size: 10px;
+  }
+
+
+  .drivers-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+
+    max-width: 1100px;
+  }
+
+}
+
+
+/* =================================
+   LARGE DESKTOP
+================================= */
+
+@media (min-width: 1300px) {
+
+  .drivers-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    max-width: 1400px;
+  }
+
+}
+
+
+/* =================================
+   MOBILE
+================================= */
+
+@media (max-width: 600px) {
+
+  .driver-management-page {
+    min-height: calc(100vh - 64px);
+
+    padding: 28px 16px 85px;
+
+    background: #ffffff;
+  }
+
+
+  .drivers-header h1 {
+    font-size: 22px;
+
+    line-height: 25px;
+  }
+
+
+  .drivers-header p {
+    margin-top: 3px;
+
+    font-size: 11px;
+  }
+
+
+  .driver-filters {
+    margin-top: 14px;
+
+    margin-bottom: 18px;
+
+    gap: 8px;
+  }
+
+
+  .driver-filter {
+    height: 27px;
+
+    padding: 0 13px;
+
+    font-size: 9px;
+  }
+
+
+  .drivers-list {
+    grid-template-columns: 1fr;
+
+    gap: 11px;
+  }
+
+}

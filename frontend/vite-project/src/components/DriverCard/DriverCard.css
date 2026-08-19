@@ -1,0 +1,318 @@
+/* =================================
+   DRIVER CARD
+================================= */
+
+.driver-card {
+  width: 100%;
+
+  background: #f3f3f3;
+
+  border-radius: 15px;
+
+  padding: 17px 18px 11px;
+
+  transition: 0.2s ease;
+}
+
+
+/* =================================
+   TOP INFORMATION
+================================= */
+
+.driver-main-info {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+}
+
+
+/* =================================
+   AVATAR
+================================= */
+
+.driver-avatar {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #079b70;
+
+  color: #ffffff;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-size: 17px;
+
+  font-weight: 600;
+}
+
+
+/* =================================
+   DRIVER DETAILS
+================================= */
+
+.driver-details {
+  min-width: 0;
+
+  flex: 1;
+}
+
+
+.driver-details h3 {
+  margin: 0;
+
+  font-size: 14px;
+
+  line-height: 17px;
+
+  color: #292929;
+
+  font-weight: 700;
+}
+
+
+.driver-email {
+  margin-top: 2px;
+
+  font-size: 10px;
+
+  line-height: 14px;
+
+  color: #666666;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+.driver-vehicle {
+  margin-top: 1px;
+
+  font-size: 10px;
+
+  line-height: 14px;
+
+  color: #666666;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =================================
+   STATUS
+================================= */
+
+.driver-status {
+  flex-shrink: 0;
+
+  padding: 5px 9px;
+
+  border-radius: 10px;
+
+  font-size: 8px;
+
+  font-weight: 700;
+}
+
+
+.driver-status.pending {
+  background: #f9e9c9;
+
+  color: #e59d00;
+}
+
+
+.driver-status.approved {
+  background: #d9f2e8;
+
+  color: #079b70;
+}
+
+
+/* =================================
+   STATS
+================================= */
+
+.driver-stats {
+  margin-top: 11px;
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr 1fr;
+
+  align-items: center;
+}
+
+
+.driver-rating {
+  display: flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  font-size: 11px;
+
+  color: #444444;
+}
+
+
+.driver-rating span {
+  color: #e7a21b;
+
+  font-size: 13px;
+}
+
+
+.driver-rating strong {
+  font-size: 11px;
+
+  font-weight: 500;
+}
+
+
+.driver-rides {
+  text-align: center;
+
+  font-size: 10px;
+
+  color: #555555;
+
+  font-weight: 600;
+}
+
+
+.driver-online {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 4px;
+
+  font-size: 10px;
+
+  color: #444444;
+}
+
+
+.driver-online span {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #333333;
+}
+
+
+/* =================================
+   APPROVE BUTTON
+================================= */
+
+.approve-driver-btn {
+  width: 100%;
+
+  height: 35px;
+
+  margin-top: 10px;
+
+  border: none;
+
+  border-radius: 20px;
+
+  background: #079b70;
+
+  color: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.approve-driver-btn:hover {
+  background: #078b65;
+}
+
+
+.approve-driver-btn:active {
+  transform: scale(0.98);
+}
+
+
+/* =================================
+   DESKTOP
+================================= */
+
+@media (min-width: 901px) {
+
+  .driver-card {
+    padding: 20px;
+  }
+
+  .driver-avatar {
+    width: 44px;
+    height: 44px;
+
+    font-size: 18px;
+  }
+
+  .driver-details h3 {
+    font-size: 15px;
+  }
+
+  .driver-email,
+  .driver-vehicle {
+    font-size: 11px;
+  }
+
+  .driver-status {
+    font-size: 9px;
+  }
+
+  .driver-stats {
+    margin-top: 14px;
+  }
+
+  .driver-rating,
+  .driver-rides,
+  .driver-online {
+    font-size: 11px;
+  }
+
+  .approve-driver-btn {
+    height: 38px;
+
+    font-size: 13px;
+  }
+
+}
