@@ -24,7 +24,7 @@ const AppRoutes = () => {
           path="/"
           element={
             <Navigate to="/admin/dashboard" />
-          }
+           } 
         />
 
 
