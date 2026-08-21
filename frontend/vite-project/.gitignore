@@ -23,6 +23,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+<<<<<<< HEAD
 
 
 # Node
@@ -48,3 +49,5 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+=======
+>>>>>>> 0ea7910bda90523c31c3246c503d8307e8b12627
