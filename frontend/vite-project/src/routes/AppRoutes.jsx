@@ -8,10 +8,17 @@ import {
 }
  from "react-router-dom";
 
+ import Login from "../pages/Auth/Login";
+import Signup from "../pages/Auth/Signup";
+
 import Dashboard from "../pages/Admin/Dashboard";
 import DriverManagement from "../pages/Admin/DriverManagement";
 import RideManagement from "../pages/Admin/RideManagement";
 import Settings from "../pages/Admin/Settings";
+
+
+/* Driver */
+import DriverDashboard from "../pages/Driver/Dashboard";
 
 const AppRoutes = () => {
   return (
@@ -25,6 +32,44 @@ const AppRoutes = () => {
           element={
             <Navigate to="/admin/dashboard" />
            } 
+        />
+
+         {/* =================================
+            AUTH
+        ================================= */}
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/register"
+          element={<Signup />}
+        />
+
+
+
+        {/* =================================
+            DEFAULT
+        ================================= */}
+
+        <Route
+          path="/"
+          element={
+            <Navigate to="/login" />
+          }
+        />
+
+        {/* =================================
+            UNKNOWN
+        ================================= */}
+
+        <Route
+          path="*"
+          element={
+            <Navigate to="/login" />
+          }
         />
 
 
@@ -65,6 +110,18 @@ const AppRoutes = () => {
             <Navigate to="/admin/dashboard" />
           }
         />
+
+
+
+        {/* =========================
+            DRIVER
+        ========================= */}
+
+        <Route
+          path="/driver/dashboard"
+          element={<DriverDashboard />}
+        />
+
 
       </Routes>
 

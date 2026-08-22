@@ -1,0 +1,1113 @@
+/* =====================================================
+   DRIVER DASHBOARD
+===================================================== */
+
+.driver-dashboard {
+  width: 100%;
+  min-height: 100vh;
+
+  background: #ffffff;
+
+  display: flex;
+
+  overflow-x: hidden;
+
+  color: #202124;
+}
+
+
+/* =====================================================
+   DESKTOP SIDEBAR
+===================================================== */
+
+.driver-sidebar {
+  width: 235px;
+
+  min-height: 100vh;
+
+  flex-shrink: 0;
+
+  background: #ffffff;
+
+  border-right: 1px solid #e8e8e8;
+
+  display: flex;
+
+  flex-direction: column;
+
+  position: fixed;
+
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  z-index: 100;
+}
+
+
+/* Logo */
+
+.driver-sidebar-logo {
+  height: 75px;
+
+  padding: 0 25px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+
+.driver-sidebar-logo-icon {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 11px;
+
+  background: #079b70;
+
+  color: #ffffff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+
+.driver-sidebar-logo span {
+  font-size: 20px;
+
+  font-weight: 800;
+
+  color: #079b70;
+}
+
+
+/* Sidebar navigation */
+
+.driver-sidebar-nav {
+  padding: 25px 13px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+.driver-sidebar-link {
+  height: 48px;
+
+  padding: 0 15px;
+
+  border-radius: 10px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  text-decoration: none;
+
+  color: #686868;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  transition: 0.2s ease;
+}
+
+
+.driver-sidebar-link:hover {
+  background: #f1f8f5;
+
+  color: #079b70;
+}
+
+
+.driver-sidebar-link.active {
+  background: #e2f8ef;
+
+  color: #079b70;
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.driver-main {
+  width: calc(100% - 235px);
+
+  min-height: 100vh;
+
+  margin-left: 235px;
+
+  background: #ffffff;
+
+  display: flex;
+
+  flex-direction: column;
+}
+
+
+/* =====================================================
+   MAP AREA
+===================================================== */
+
+.driver-map-area {
+  height: 54vh;
+
+  min-height: 390px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  background: #dff2e9;
+}
+
+
+/* Map grid */
+
+.driver-map-grid {
+  position: absolute;
+
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(180, 211, 199, 0.45) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(180, 211, 199, 0.45) 1px,
+      transparent 1px
+    );
+
+  background-size: 72px 72px;
+}
+
+
+/* Major roads */
+
+.driver-map-area::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+
+  left: 31%;
+
+  width: 12px;
+
+  background: rgba(191, 218, 207, 0.8);
+
+  transform: rotate(0deg);
+}
+
+
+.driver-map-area::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  top: 51%;
+
+  height: 11px;
+
+  background: rgba(191, 218, 207, 0.8);
+}
+
+
+/* =====================================================
+   TODAY EARNING
+===================================================== */
+
+.today-earning {
+  position: absolute;
+
+  top: 22px;
+  left: 25px;
+
+  height: 48px;
+
+  padding: 0 19px;
+
+  background: #ffffff;
+
+  border-radius: 25px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  color: #222222;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  z-index: 5;
+}
+
+
+.today-earning svg {
+  color: #079b70;
+}
+
+
+/* =====================================================
+   ONLINE
+===================================================== */
+
+.online-status {
+  position: absolute;
+
+  top: 22px;
+  right: 25px;
+
+  height: 48px;
+
+  padding: 0 22px;
+
+  border-radius: 25px;
+
+  background: #cdf8e3;
+
+  color: #087d5c;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  font-size: 15px;
+
+  font-weight: 800;
+
+  z-index: 5;
+}
+
+
+.online-dot {
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+
+  background: #12a96e;
+}
+
+
+/* =====================================================
+   LOCATION
+===================================================== */
+
+.current-location {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 58px;
+  height: 58px;
+
+  border-radius: 50%;
+
+  background: rgba(247, 174, 0, 0.16);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  z-index: 4;
+}
+
+
+.location-pulse {
+  position: absolute;
+
+  width: 46px;
+  height: 46px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 190, 25, 0.28);
+}
+
+
+.location-dot {
+  width: 34px;
+  height: 34px;
+
+  border-radius: 50%;
+
+  background: #f6a900;
+
+  border: 3px solid #ffffff;
+
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.12);
+
+  z-index: 2;
+}
+
+
+/* Hide unused pin on desktop map */
+
+.map-pin {
+  display: none;
+}
+
+
+/* =====================================================
+   DRIVER INFO PANEL
+===================================================== */
+
+.driver-info-panel {
+  background: #ffffff;
+
+  margin-top: -30px;
+
+  border-radius: 30px 30px 0 0;
+
+  position: relative;
+
+  z-index: 10;
+
+  padding: 14px 34px 35px;
+}
+
+
+/* Handle */
+
+.panel-handle {
+  width: 55px;
+
+  height: 5px;
+
+  border-radius: 5px;
+
+  background: #dddddd;
+
+  margin: 0 auto 20px;
+}
+
+
+/* Greeting */
+
+.driver-greeting h1 {
+  margin: 0;
+
+  font-size: 28px;
+
+  line-height: 34px;
+
+  font-weight: 750;
+}
+
+
+.driver-greeting p {
+  margin: 4px 0 0;
+
+  color: #555555;
+
+  font-size: 15px;
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+.driver-stat-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 15px;
+
+  margin-top: 20px;
+}
+
+
+.driver-stat-card {
+  min-height: 150px;
+
+  border-radius: 17px;
+
+  background: #f5f5f5;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+}
+
+
+.driver-stat-icon {
+  width: 43px;
+  height: 43px;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin-bottom: 9px;
+}
+
+
+.ride-icon {
+  color: #079b70;
+
+  background: #dcf6ed;
+}
+
+
+.rating-icon {
+  color: #efa900;
+
+  background: #fff1cc;
+}
+
+
+.wallet-icon {
+  color: #079b70;
+
+  background: #d9f4e9;
+}
+
+
+.driver-stat-card strong {
+  font-size: 24px;
+
+  line-height: 29px;
+
+  font-weight: 750;
+
+  color: #202124;
+}
+
+
+.driver-stat-card span {
+  margin-top: 5px;
+
+  color: #555555;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   LOOKING FOR RIDES
+===================================================== */
+
+.looking-rides-card {
+  margin-top: 20px;
+
+  min-height: 185px;
+
+  border-radius: 20px;
+
+  background: #f5f5f5;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  padding: 20px;
+}
+
+
+.search-icon {
+  color: #565656;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin-bottom: 13px;
+}
+
+
+.looking-rides-card h2 {
+  margin: 0;
+
+  font-size: 19px;
+
+  line-height: 24px;
+
+  font-weight: 700;
+}
+
+
+.looking-rides-card p {
+  margin: 5px 0 0;
+
+  color: #666666;
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   GO OFFLINE
+===================================================== */
+
+.go-offline-button {
+  width: 100%;
+
+  height: 60px;
+
+  margin-top: 18px;
+
+  border: none;
+
+  border-radius: 32px;
+
+  background: #e92727;
+
+  color: #ffffff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  font-size: 18px;
+
+  font-weight: 750;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.go-offline-button:hover {
+  background: #d91f1f;
+}
+
+
+.go-offline-button:active {
+  transform: scale(0.99);
+}
+
+
+.offline-icon {
+  width: 20px;
+  height: 20px;
+
+  border: 2px solid #ffffff;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+
+/* =====================================================
+   MOBILE BOTTOM NAV
+===================================================== */
+
+.driver-mobile-nav {
+  display: none;
+}
+
+
+/* =====================================================
+   TABLET / SMALL DESKTOP
+===================================================== */
+
+@media (min-width: 901px) and (max-width: 1100px) {
+
+  .driver-sidebar {
+    width: 205px;
+  }
+
+
+  .driver-main {
+    width: calc(100% - 205px);
+
+    margin-left: 205px;
+  }
+
+
+  .driver-info-panel {
+    padding-left: 25px;
+
+    padding-right: 25px;
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 900px) {
+
+  .driver-dashboard {
+    min-height: 100vh;
+
+    display: block;
+
+    background: #ffffff;
+
+    padding-bottom: 67px;
+  }
+
+
+  /* Hide desktop sidebar */
+
+  .driver-sidebar {
+    display: none;
+  }
+
+
+  /* Main */
+
+  .driver-main {
+    width: 100%;
+
+    min-height: calc(100vh - 67px);
+
+    margin-left: 0;
+
+    display: block;
+  }
+
+
+  /* Map */
+
+  .driver-map-area {
+    height: 49vh;
+
+    min-height: 600px;
+
+    max-height: 700px;
+  }
+
+
+  .driver-map-grid {
+    background-size: 72px 72px;
+  }
+
+
+  /* Today's earning */
+
+  .today-earning {
+    top: 23px;
+    left: 25px;
+
+    height: 50px;
+
+    padding: 0 18px;
+
+    font-size: 15px;
+  }
+
+
+  /* Online */
+
+  .online-status {
+    top: 23px;
+    right: 25px;
+
+    height: 50px;
+
+    padding: 0 21px;
+
+    font-size: 15px;
+  }
+
+
+  /* Info panel */
+
+  .driver-info-panel {
+    margin-top: -34px;
+
+    border-radius: 32px 32px 0 0;
+
+    padding: 13px 46px 25px;
+
+    min-height: 590px;
+  }
+
+
+  .panel-handle {
+    width: 70px;
+
+    height: 5px;
+
+    margin-bottom: 31px;
+  }
+
+
+  .driver-greeting h1 {
+    font-size: 29px;
+
+    line-height: 35px;
+  }
+
+
+  .driver-greeting p {
+    font-size: 16px;
+
+    margin-top: 3px;
+  }
+
+
+  /* Stats */
+
+  .driver-stat-grid {
+    gap: 17px;
+
+    margin-top: 22px;
+  }
+
+
+  .driver-stat-card {
+    min-height: 174px;
+
+    border-radius: 18px;
+  }
+
+
+  .driver-stat-icon {
+    width: 43px;
+    height: 43px;
+
+    margin-bottom: 9px;
+  }
+
+
+  .driver-stat-card strong {
+    font-size: 27px;
+
+    line-height: 32px;
+  }
+
+
+  .driver-stat-card span {
+    font-size: 15px;
+
+    margin-top: 6px;
+  }
+
+
+  /* Looking rides */
+
+  .looking-rides-card {
+    min-height: 190px;
+
+    margin-top: 20px;
+
+    border-radius: 21px;
+
+    padding: 20px;
+  }
+
+
+  .search-icon svg {
+    width: 56px;
+    height: 56px;
+  }
+
+
+  .looking-rides-card h2 {
+    font-size: 19px;
+
+    margin-top: 1px;
+  }
+
+
+  .looking-rides-card p {
+    font-size: 13px;
+
+    margin-top: 6px;
+  }
+
+
+  /* Offline */
+
+  .go-offline-button {
+    height: 63px;
+
+    margin-top: 20px;
+
+    font-size: 19px;
+  }
+
+
+  /* Mobile navigation */
+
+  .driver-mobile-nav {
+    position: fixed;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-around;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 67px;
+
+    background: #ffffff;
+
+    border-top: 1px solid #e8e8e8;
+
+    z-index: 1000;
+  }
+
+
+  .driver-mobile-link {
+    width: 33.33%;
+
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 3px;
+
+    text-decoration: none;
+
+    color: #555555;
+
+    font-size: 11px;
+
+    font-weight: 500;
+  }
+
+
+  .driver-mobile-link.active {
+    color: #079b70;
+
+    font-weight: 700;
+  }
+
+
+  .driver-mobile-link svg {
+    stroke-width: 2.5;
+  }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 420px) {
+
+  .driver-map-area {
+    height: 49vh;
+
+    min-height: 665px;
+  }
+
+
+  .today-earning {
+    left: 25px;
+
+    top: 23px;
+
+    height: 48px;
+
+    font-size: 15px;
+
+    padding: 0 18px;
+  }
+
+
+  .online-status {
+    right: 25px;
+
+    top: 23px;
+
+    height: 48px;
+
+    padding: 0 19px;
+
+    font-size: 15px;
+  }
+
+
+  .driver-info-panel {
+    padding-left: 46px;
+
+    padding-right: 46px;
+
+    margin-top: -35px;
+  }
+
+
+  .panel-handle {
+    margin-bottom: 30px;
+  }
+
+
+  .driver-greeting h1 {
+    font-size: 28px;
+  }
+
+
+  .driver-greeting p {
+    font-size: 15px;
+  }
+
+
+  .driver-stat-grid {
+    gap: 16px;
+  }
+
+
+  .driver-stat-card {
+    min-height: 174px;
+  }
+
+
+  .driver-stat-card strong {
+    font-size: 26px;
+  }
+
+
+  .driver-stat-card span {
+    font-size: 14px;
+  }
+
+
+  .looking-rides-card {
+    min-height: 190px;
+  }
+
+
+  .go-offline-button {
+    height: 62px;
+
+    font-size: 18px;
+  }
+
+}
+
+
+/* =====================================================
+   VERY SMALL MOBILE
+===================================================== */
+
+@media (max-width: 360px) {
+
+  .today-earning {
+    left: 15px;
+
+    padding: 0 14px;
+
+    font-size: 13px;
+  }
+
+
+  .online-status {
+    right: 15px;
+
+    padding: 0 15px;
+
+    font-size: 13px;
+  }
+
+
+  .driver-info-panel {
+    padding-left: 25px;
+
+    padding-right: 25px;
+  }
+
+
+  .driver-greeting h1 {
+    font-size: 25px;
+  }
+
+
+  .driver-greeting p {
+    font-size: 13px;
+  }
+
+
+  .driver-stat-grid {
+    gap: 9px;
+  }
+
+
+  .driver-stat-card {
+    min-height: 155px;
+  }
+
+
+  .driver-stat-card strong {
+    font-size: 22px;
+  }
+
+
+  .driver-stat-card span {
+    font-size: 12px;
+  }
+
+}
