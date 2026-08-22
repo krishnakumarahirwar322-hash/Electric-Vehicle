@@ -1,0 +1,358 @@
+/* =========================================
+   AUTH PAGE
+========================================= */
+
+.auth-page {
+  min-height: 100vh;
+
+  background: #f5faf8;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 30px 20px;
+}
+
+
+/* =========================================
+   AUTH CONTAINER
+========================================= */
+
+.auth-container {
+  width: 100%;
+
+  max-width: 410px;
+
+  background: #ffffff;
+
+  border-radius: 20px;
+
+  padding: 35px 32px 30px;
+
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+}
+
+
+/* =========================================
+   LOGO
+========================================= */
+
+.auth-logo {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+}
+
+
+.auth-logo-icon {
+  width: 39px;
+  height: 39px;
+
+  border-radius: 12px;
+
+  background: #079b70;
+
+  color: #ffffff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+
+.auth-logo h1 {
+  margin: 0;
+
+  color: #079b70;
+
+  font-size: 23px;
+
+  font-weight: 800;
+}
+
+
+/* =========================================
+   HEADING
+========================================= */
+
+.auth-heading {
+  text-align: center;
+
+  margin-top: 28px;
+}
+
+
+.auth-heading h2 {
+  margin: 0;
+
+  color: #202124;
+
+  font-size: 24px;
+
+  line-height: 30px;
+
+  font-weight: 700;
+}
+
+
+.auth-heading p {
+  margin: 6px 0 0;
+
+  color: #777777;
+
+  font-size: 12px;
+
+  line-height: 17px;
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+.auth-form {
+  margin-top: 28px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+
+/* =========================================
+   FIELD
+========================================= */
+
+.auth-field {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+.auth-field label {
+  color: #333333;
+
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+
+.auth-field input {
+  width: 100%;
+
+  height: 45px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #dddddd;
+
+  border-radius: 10px;
+
+  outline: none;
+
+  padding: 0 13px;
+
+  background: #ffffff;
+
+  color: #222222;
+
+  font-size: 12px;
+
+  transition: 0.2s ease;
+}
+
+
+.auth-field input::placeholder {
+  color: #aaaaaa;
+}
+
+
+.auth-field input:focus {
+  border-color: #079b70;
+
+  box-shadow: 0 0 0 3px rgba(7, 155, 112, 0.08);
+}
+
+
+/* =========================================
+   PASSWORD
+========================================= */
+
+.password-wrapper {
+  position: relative;
+}
+
+
+.password-wrapper input {
+  padding-right: 45px;
+}
+
+
+.password-toggle {
+  position: absolute;
+
+  right: 12px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  border: none;
+
+  background: transparent;
+
+  color: #777777;
+
+  padding: 3px;
+
+  display: flex;
+
+  cursor: pointer;
+}
+
+
+/* =========================================
+   SUBMIT
+========================================= */
+
+.auth-submit-button {
+  width: 100%;
+
+  height: 45px;
+
+  margin-top: 4px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #079b70;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.auth-submit-button:hover {
+  background: #078b65;
+}
+
+
+.auth-submit-button:active {
+  transform: scale(0.99);
+}
+
+
+/* =========================================
+   BOTTOM
+========================================= */
+
+.auth-bottom-text {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 5px;
+
+  margin-top: 23px;
+
+  font-size: 11px;
+
+  color: #777777;
+}
+
+
+.auth-bottom-text a {
+  color: #079b70;
+
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+
+.auth-bottom-text a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .auth-page {
+    min-height: 100vh;
+
+    padding: 20px 16px;
+
+    background: #ffffff;
+
+    align-items: center;
+  }
+
+
+  .auth-container {
+    max-width: 100%;
+
+    padding: 25px 5px;
+
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+
+
+  .auth-logo-icon {
+    width: 37px;
+    height: 37px;
+  }
+
+
+  .auth-logo h1 {
+    font-size: 22px;
+  }
+
+
+  .auth-heading {
+    margin-top: 25px;
+  }
+
+
+  .auth-heading h2 {
+    font-size: 23px;
+  }
+
+
+  .auth-form {
+    margin-top: 26px;
+
+    gap: 17px;
+  }
+
+}
