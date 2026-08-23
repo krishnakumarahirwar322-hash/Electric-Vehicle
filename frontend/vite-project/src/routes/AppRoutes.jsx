@@ -19,6 +19,18 @@ import Settings from "../pages/Admin/Settings";
 
 /* Driver */
 import DriverDashboard from "../pages/Driver/Dashboard";
+import Profile from "../pages/Driver/Profile";
+
+
+import { Users } from "lucide-react";
+
+
+// Users
+
+import UserProfile from "../pages/User/Profile";
+import Home from "../pages/User/Home";
+import History from "../pages/User/History";
+
 
 const AppRoutes = () => {
   return (
@@ -28,10 +40,8 @@ const AppRoutes = () => {
 
         {/* Default */}
         <Route
-          path="/"
-          element={
-            <Navigate to="/admin/dashboard" />
-           } 
+          path="/login"
+          element={<Login />}
         />
 
          {/* =================================
@@ -102,15 +112,6 @@ const AppRoutes = () => {
     />
 
 
-        {/* Unknown URL */}
-
-        <Route
-          path="*"
-          element={
-            <Navigate to="/admin/dashboard" />
-          }
-        />
-
 
 
         {/* =========================
@@ -122,7 +123,19 @@ const AppRoutes = () => {
           element={<DriverDashboard />}
         />
 
+      <Route path="/driver/profile" 
+      element={<Profile />} />
 
+
+       {/* user */}
+
+      <Route path="/user/home" element={<Home />} />
+      
+     <Route   path="/user/profile"  element={<UserProfile />}/>
+
+     <Route  path="/user/history"   element={<History />} />
+     
+     
       </Routes>
 
     </BrowserRouter>

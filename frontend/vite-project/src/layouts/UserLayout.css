@@ -1,0 +1,35 @@
+/* .user-layout {
+
+    width: 100%;
+
+    min-height: 100vh;
+
+    background: #ffffff;
+
+}
+
+
+.user-layout-content {
+
+    margin-left: 220px;
+
+    min-height: 100vh;
+
+    width: calc(100% - 220px);
+
+}
+
+
+/* Mobile */
+/* 
+@media (max-width: 768px) {
+
+    .user-layout-content {
+
+        margin-left: 0;
+
+        width: 100%;
+
+    }
+
+}  */

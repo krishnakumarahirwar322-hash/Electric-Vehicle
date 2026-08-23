@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import "./Login.css";
 import { loginUser } from "../../services/authApi.js";
 
 const Login = () => {
-
+const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -22,64 +23,65 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
+  try {
+    const response = await loginUser(formData);
 
-      const response = await loginUser(formData);
+    console.log("LOGIN RESPONSE:", response.data);
+    console.log("USER:", response.data?.user);
+    console.log("ROLE:", response.data?.user?.role);
 
-      console.log("Login Response:", response.data);
+    if (response.data?.success) {
+      const user = response.data.user;
+      const role = user?.role?.toLowerCase();
 
-      if (response.data?.success) {
+      // JWT token save
+      localStorage.setItem("token", response.data.token);
 
-        // JWT token save
-        localStorage.setItem(
-          "token",
-          response.data.token
-        );
+      // User information save
+      localStorage.setItem("user", JSON.stringify(user));
 
-        // User information save
-        localStorage.setItem(
-          "user",
-          JSON.stringify(response.data.user)
-        );
+      console.log("ROLE:", role);
 
-        alert("Login successful!");
-
-        // Login ke baad home page
-        // window.location.href = "/";
-
-      } else {
-
-        alert(
-          response.data?.message ||
-          "Login failed"
-        );
-
+      // Role ke according redirect
+      if (role === "admin") {
+        console.log("Redirecting to ADMIN");
+        navigate("/admin/dashboard");
+      } 
+      else if (role === "user") {
+        console.log("Redirecting to USER");
+        navigate("/user/home");
+      } 
+      else if (role === "driver") {
+        console.log("Redirecting to DRIVER");
+        navigate("/driver/dashboard");
+      } 
+      else {
+        alert("Invalid role: " + role);
       }
 
-    } catch (error) {
-
-      console.error("Login Error:", error);
-
-      console.log("STATUS:", error.response?.status);
-      console.log("DATA:", error.response?.data);
-      console.log("HEADERS:", error.response?.headers);
-
-      if (error.response) {
-
-        alert(
-          `Status: ${error.response.status}\n` +
-          `Response: ${JSON.stringify(error.response.data)}`
-        );
-
-      } else {
-
-        alert("Backend connection failed!");
-
-      }
+    } else {
+      alert(response.data?.message || "Login failed");
     }
-  };
+
+  } catch (error) {
+    console.error("Login Error:", error);
+
+    console.log("STATUS:", error.response?.status);
+    console.log("DATA:", error.response?.data);
+    console.log("HEADERS:", error.response?.headers);
+
+    if (error.response) {
+      alert(
+        `Status: ${error.response.status}\n` +
+        `Response: ${JSON.stringify(error.response.data)}`
+      );
+    } else {
+      alert("Backend connection failed!");
+    }
+  }
+};
 
   return (
     <div className="auth-page">

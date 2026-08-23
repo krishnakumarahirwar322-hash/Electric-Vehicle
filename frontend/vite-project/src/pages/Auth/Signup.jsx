@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import "./Signup.css";
 import { signupUser } from "../../services/authApi.js";
@@ -7,6 +8,8 @@ import { signupUser } from "../../services/authApi.js";
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -46,7 +49,7 @@ const Signup = () => {
 
       if (response.data?.success) {
         alert("Account created successfully!");
-        // e.g. navigate("/login");
+        navigate("/login");
       } else {
         alert(response.data?.message || "Signup failed");
       }
