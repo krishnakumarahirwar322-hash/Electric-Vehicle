@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Zap } from "lucide-react";
-
 import "./Login.css";
+import { loginUser } from "../../services/authApi.js";
 
 const Login = () => {
 
@@ -12,7 +12,6 @@ const Login = () => {
     password: "",
   });
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -22,23 +21,72 @@ const Login = () => {
     }));
   };
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Login Data:", formData);
+    try {
 
-    // Later:
-    // POST /api/auth/login
+      const response = await loginUser(formData);
+
+      console.log("Login Response:", response.data);
+
+      if (response.data?.success) {
+
+        // JWT token save
+        localStorage.setItem(
+          "token",
+          response.data.token
+        );
+
+        // User information save
+        localStorage.setItem(
+          "user",
+          JSON.stringify(response.data.user)
+        );
+
+        alert("Login successful!");
+
+        // Login ke baad home page
+        // window.location.href = "/";
+
+      } else {
+
+        alert(
+          response.data?.message ||
+          "Login failed"
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error("Login Error:", error);
+
+      console.log("STATUS:", error.response?.status);
+      console.log("DATA:", error.response?.data);
+      console.log("HEADERS:", error.response?.headers);
+
+      if (error.response) {
+
+        alert(
+          `Status: ${error.response.status}\n` +
+          `Response: ${JSON.stringify(error.response.data)}`
+        );
+
+      } else {
+
+        alert("Backend connection failed!");
+
+      }
+    }
   };
-
 
   return (
     <div className="auth-page">
 
       <div className="auth-container">
 
-        {/* Logo */}
+        {/* LOGO */}
 
         <div className="auth-logo">
 
@@ -46,20 +94,16 @@ const Login = () => {
             <Zap size={23} fill="currentColor" />
           </div>
 
-          <h1>
-            VoltRide
-          </h1>
+          <h1>VoltRide</h1>
 
         </div>
 
 
-        {/* Heading */}
+        {/* HEADING */}
 
         <div className="auth-heading">
 
-          <h2>
-            Welcome back
-          </h2>
+          <h2>Welcome back</h2>
 
           <p>
             Login to your VoltRide account
@@ -68,14 +112,14 @@ const Login = () => {
         </div>
 
 
-        {/* Login Form */}
+        {/* LOGIN FORM */}
 
         <form
           className="auth-form"
           onSubmit={handleSubmit}
         >
 
-          {/* Email */}
+          {/* EMAIL */}
 
           <div className="auth-field">
 
@@ -96,7 +140,7 @@ const Login = () => {
           </div>
 
 
-          {/* Password */}
+          {/* PASSWORD */}
 
           <div className="auth-field">
 
@@ -108,7 +152,11 @@ const Login = () => {
 
               <input
                 id="login-password"
-                type={showPassword ? "text" : "password"}
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
                 name="password"
                 placeholder="Enter your password"
                 value={formData.password}
@@ -123,11 +171,13 @@ const Login = () => {
                   setShowPassword(!showPassword)
                 }
               >
+
                 {showPassword ? (
                   <EyeOff size={18} />
                 ) : (
                   <Eye size={18} />
                 )}
+
               </button>
 
             </div>
@@ -135,7 +185,7 @@ const Login = () => {
           </div>
 
 
-          {/* Login Button */}
+          {/* LOGIN BUTTON */}
 
           <button
             type="submit"
@@ -147,7 +197,7 @@ const Login = () => {
         </form>
 
 
-        {/* Register */}
+        {/* REGISTER */}
 
         <div className="auth-bottom-text">
 
