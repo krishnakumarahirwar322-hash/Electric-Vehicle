@@ -1,0 +1,719 @@
+/* =========================================================
+   MAIN PAGE
+========================================================= */
+
+.user-profile-page {
+
+    width: 100%;
+    min-height: 100vh;
+
+    background: #ffffff;
+
+    color: #222222;
+
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    box-sizing: border-box;
+
+    padding-bottom: 75px;
+
+}
+
+
+/* =========================================================
+   PROFILE HEADER
+========================================================= */
+
+.profile-header {
+
+    width: 100%;
+
+    min-height: 205px;
+
+    background: #cff8e3;
+
+    border-radius: 0 0 25px 25px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    padding: 22px 20px 24px;
+
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+.profile-avatar {
+
+    width: 75px;
+    height: 75px;
+
+    border-radius: 50%;
+
+    background: #079c75;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 33px;
+
+    font-weight: 700;
+
+    margin-bottom: 10px;
+
+}
+
+
+/* =========================================================
+   NAME
+========================================================= */
+
+.profile-header h1 {
+
+    margin: 0;
+
+    font-size: 21px;
+
+    line-height: 1.2;
+
+    font-weight: 750;
+
+}
+
+
+/* =========================================================
+   EMAIL
+========================================================= */
+
+.profile-header p {
+
+    margin: 5px 0 0;
+
+    font-size: 12px;
+
+    color: #444;
+
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.profile-content {
+
+    width: 100%;
+
+    max-width: 700px;
+
+    margin: 0 auto;
+
+    padding: 13px 12px 20px;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =========================================================
+   PROFILE OPTIONS
+========================================================= */
+
+.profile-options {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+}
+
+
+/* =========================================================
+   OPTION
+========================================================= */
+
+.profile-option {
+
+    width: 100%;
+
+    min-height: 55px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background: #f4f4f4;
+
+    padding: 7px 10px;
+
+    display: flex;
+
+    align-items: center;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease;
+
+}
+
+
+.profile-option:hover {
+
+    background: #eeeeee;
+
+}
+
+
+.profile-option:active {
+
+    transform: scale(0.99);
+
+}
+
+
+/* =========================================================
+   OPTION ICON
+========================================================= */
+
+.profile-option-icon {
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 50%;
+
+    background: #d0f8e6;
+
+    color: #079c75;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+}
+
+
+/* =========================================================
+   OPTION CONTENT
+========================================================= */
+
+.profile-option-content {
+
+    flex: 1;
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    margin-left: 10px;
+
+    gap: 2px;
+
+}
+
+
+.profile-option-title {
+
+    font-size: 13px;
+
+    line-height: 16px;
+
+    font-weight: 700;
+
+    color: #292929;
+
+}
+
+
+.profile-option-subtitle {
+
+    font-size: 10px;
+
+    line-height: 13px;
+
+    color: #555;
+
+}
+
+
+/* =========================================================
+   ARROW
+========================================================= */
+
+.profile-option-arrow {
+
+    color: #666;
+
+    flex-shrink: 0;
+
+    margin-right: 2px;
+
+}
+
+
+/* =========================================================
+   SIGN OUT
+========================================================= */
+
+.profile-signout {
+
+    width: 100%;
+
+    height: 44px;
+
+    margin-top: 23px;
+
+    border-radius: 23px;
+
+    border: 1px solid #df4949;
+
+    background: white;
+
+    color: #d93636;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+
+}
+
+
+.profile-signout:hover {
+
+    background: #fff4f4;
+
+}
+
+
+.profile-signout:active {
+
+    transform: scale(0.99);
+
+}
+
+
+
+/* =========================================================
+   BOTTOM NAVIGATION
+========================================================= */
+
+.user-profile-bottom-nav {
+
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 58px;
+
+    background: white;
+
+    border-top: 1px solid #eeeeee;
+
+    z-index: 100;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-around;
+
+}
+
+
+.profile-nav-item {
+
+    width: 33.33%;
+
+    height: 58px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #555;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 2px;
+
+    cursor: pointer;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+}
+
+
+.profile-nav-item.active {
+
+    color: #079c75;
+
+}
+
+
+.profile-nav-item svg {
+
+    stroke-width: 2.5;
+
+}
+
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .user-profile-page {
+
+        min-height: 100vh;
+
+        padding-bottom: 68px;
+
+    }
+
+
+    .profile-header {
+
+        min-height: 205px;
+
+        border-radius: 0 0 23px 23px;
+
+        padding-top: 20px;
+
+    }
+
+
+    .profile-avatar {
+
+        width: 75px;
+        height: 75px;
+
+        font-size: 32px;
+
+    }
+
+
+    .profile-header h1 {
+
+        font-size: 20px;
+
+    }
+
+
+    .profile-header p {
+
+        font-size: 12px;
+
+    }
+
+
+    .profile-content {
+
+        padding:
+
+            13px
+            12px
+            20px;
+
+    }
+
+
+    .profile-options {
+
+        gap: 7px;
+
+    }
+
+
+    .profile-option {
+
+        min-height: 55px;
+
+        border-radius: 11px;
+
+    }
+
+
+    .profile-option-icon {
+
+        width: 37px;
+        height: 37px;
+
+    }
+
+
+    .profile-option-title {
+
+        font-size: 13px;
+
+    }
+
+
+    .profile-option-subtitle {
+
+        font-size: 10px;
+
+    }
+
+
+    .profile-signout {
+
+        margin-top: 23px;
+
+        height: 44px;
+
+    }
+
+
+    .user-profile-bottom-nav {
+
+        height: 58px;
+
+    }
+
+
+    .profile-nav-item {
+
+        height: 58px;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (min-width: 601px) and (max-width: 1000px) {
+
+    .profile-header {
+
+        min-height: 240px;
+
+    }
+
+
+    .profile-content {
+
+        max-width: 650px;
+
+        padding-top: 25px;
+
+    }
+
+
+    .profile-option {
+
+        min-height: 64px;
+
+    }
+
+
+    .profile-option-icon {
+
+        width: 43px;
+        height: 43px;
+
+    }
+
+
+    .profile-option-title {
+
+        font-size: 14px;
+
+    }
+
+
+    .profile-option-subtitle {
+
+        font-size: 11px;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   DESKTOP / LAPTOP
+========================================================= */
+
+@media (min-width: 1001px) {
+
+    .user-profile-page {
+
+        background: #f7f8f7;
+
+        padding-bottom: 85px;
+
+    }
+
+
+    .profile-header {
+
+        max-width: 900px;
+
+        min-height: 260px;
+
+        margin: 0 auto;
+
+        border-radius: 0 0 30px 30px;
+
+    }
+
+
+    .profile-avatar {
+
+        width: 90px;
+        height: 90px;
+
+        font-size: 38px;
+
+    }
+
+
+    .profile-header h1 {
+
+        font-size: 26px;
+
+    }
+
+
+    .profile-header p {
+
+        font-size: 14px;
+
+    }
+
+
+    .profile-content {
+
+        max-width: 700px;
+
+        padding-top: 25px;
+
+    }
+
+
+    .profile-option {
+
+        min-height: 65px;
+
+        border-radius: 13px;
+
+        padding-left: 13px;
+
+        padding-right: 13px;
+
+    }
+
+
+    .profile-option-icon {
+
+        width: 44px;
+        height: 44px;
+
+    }
+
+
+    .profile-option-title {
+
+        font-size: 14px;
+
+    }
+
+
+    .profile-option-subtitle {
+
+        font-size: 11px;
+
+    }
+
+
+    .profile-signout {
+
+        height: 48px;
+
+        font-size: 14px;
+
+    }
+
+
+    .user-profile-bottom-nav {
+
+        height: 70px;
+
+        justify-content: center;
+
+        gap: 180px;
+
+    }
+
+
+    .profile-nav-item {
+
+        width: 90px;
+
+        height: 70px;
+
+        font-size: 11px;
+
+    }
+
+}
