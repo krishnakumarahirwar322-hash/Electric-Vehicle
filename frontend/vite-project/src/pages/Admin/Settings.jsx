@@ -28,13 +28,14 @@ const Settings = () => {
 
 
   // Sign out
-  const handleSignOut = () => {
-    console.log("Admin signed out");
+  const handleLogout = () => {
+  localStorage.removeItem("token");
 
-    // Later:
-    // localStorage.removeItem("token");
-    // navigate("/login");
-  };
+  // Agar user information bhi save ki hai
+  localStorage.removeItem("user");
+
+  window.location.href = "/login";
+};
 
 
   return (
@@ -133,7 +134,7 @@ const Settings = () => {
 
         <button
           className="sign-out-button"
-          onClick={handleSignOut}
+          onClick={handleLogout}
         >
 
           <LogOut
