@@ -11,7 +11,9 @@ router.get("/stats", authMiddleware, roleMiddleware("admin"), (req, res) => {
             (SELECT COUNT(*) FROM users WHERE role = 'user') AS total_users,
             (SELECT COUNT(*) FROM drivers) AS total_drivers,
             (SELECT COUNT(*) FROM rides) AS total_rides,
+             (SELECT COUNT(*) FROM rides) AS active_rides,
             (SELECT COUNT(*) FROM rides WHERE status = 'completed') AS completed_rides,
+            (SELECT COUNT(*) FROM rides WHERE status = 'cancelled') AS cancel_rides,
             (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE payment_status = 'completed') AS total_revenue,
             (SELECT SUM(available_ports) FROM charging_stations WHERE status = 'active') AS total_available_charging_ports
     `;
