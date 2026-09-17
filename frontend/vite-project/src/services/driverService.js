@@ -25,14 +25,14 @@ export const getAllDrivers = () => {
     return api.get("/api/drivers");
 };
 
-// 3. Admin Se Driver Approve / Reject Karne Ke Liye
-export const updateDriverStatus = (driverId, status) => {
-    // Agar aapka status update route router.put("/status") hai:
-    return api.put("/api/drivers/status", { 
-        driver_id: driverId, 
-        status: status 
-    });
+
+export const updateDriverStatus = async (driverId, status) => {
+  // Backend relies on req.body: { driver_id, status }
+  return await api.put("/api/drivers/status", {
+    driver_id: driverId,
+    status: status
+  });
+};
 
     // YA agar aapne router.put("/:id/status") ya router.patch("/:id") banaya hai:
     // return api.put(`/api/drivers/${driverId}/status`, { status });
-};

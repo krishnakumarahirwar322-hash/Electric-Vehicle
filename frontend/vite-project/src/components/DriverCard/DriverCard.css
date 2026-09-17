@@ -1,4 +1,4 @@
-/* =================================
+/* /* =================================
    DRIVER CARD
 ================================= */
 
@@ -269,50 +269,202 @@
 }
 
 
-/* =================================
-   DESKTOP
-================================= */
+/* ==========================================
+   DRIVER MANAGEMENT PAGE LAYOUT
+========================================== */
+.driver-management-page {
+  padding: 24px;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
 
-@media (min-width: 901px) {
+/* HEADER SECTION */
+.drivers-header {
+  margin-bottom: 24px;
+}
 
-  .driver-card {
-    padding: 20px;
-  }
+.drivers-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
 
-  .driver-avatar {
-    width: 44px;
-    height: 44px;
+.drivers-header p {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 4px;
+}
 
-    font-size: 18px;
-  }
+/* FILTER BUTTONS */
+.driver-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
 
-  .driver-details h3 {
-    font-size: 15px;
-  }
+.driver-filter {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  background-color: #f3f4f6;
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
 
-  .driver-email,
-  .driver-vehicle {
-    font-size: 11px;
-  }
+.driver-filter:hover {
+  background-color: #e5e7eb;
+}
 
-  .driver-status {
-    font-size: 9px;
-  }
+.driver-filter.active {
+  background-color: #047857;
+  color: #ffffff;
+}
 
-  .driver-stats {
-    margin-top: 14px;
-  }
+/* DRIVER CARDS GRID */
+.drivers-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
 
-  .driver-rating,
-  .driver-rides,
-  .driver-online {
-    font-size: 11px;
-  }
+/* NO DRIVERS STATE */
+.no-drivers {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px 0;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px dashed #e5e7eb;
+}
 
-  .approve-driver-btn {
-    height: 38px;
+.no-drivers h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #374151;
+}
 
-    font-size: 13px;
-  }
+.no-drivers p {
+  margin-top: 6px;
+  color: #6b7280;
+  font-size: 14px;
+}
 
+/* ==========================================
+   DRIVER CARD COMPONENT STYLES
+========================================== */
+.driver-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.driver-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.driver-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.driver-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #047857;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.driver-info {
+  flex: 1;
+}
+
+.driver-info h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.driver-email {
+  display: block;
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.driver-vehicle {
+  margin: 6px 0 0 0;
+  font-size: 13px;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-badge.approved {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.driver-card-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.online-status {
+  color: #000000;
+  font-weight: 600;
+}
+
+.approve-btn {
+  width: 100%;
+  padding: 12px;
+  background: #047857;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.approve-btn:hover {
+  background: #065f46;
 }

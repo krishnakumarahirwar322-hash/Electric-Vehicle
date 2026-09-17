@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+import api from "../../services/api";
 
 import {
   Car,
@@ -12,27 +14,165 @@ import {
 
 import "./Dashboard.css";
 
-
 const Dashboard = () => {
+  // =================================================
+  // DRIVER STATE
+  // =================================================
 
-  const driver = {
-    name: "Ravi",
-    vehicle: "Tata Nexon EV",
-    vehicleNumber: "KA01EV1234",
-    totalRides: 94,
-    rating: 4.7,
-    wallet: 1635,
-  };
+  const [driver, setDriver] = useState(null);
 
+  // =================================================
+  // DASHBOARD REAL DATA
+  // =================================================
+
+  const [dashboard, setDashboard] = useState({
+    totalRides: 0,
+    rating: 0,
+    wallet: 0,
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
+
+  // =================================================
+  // GET DRIVER + DASHBOARD DATA
+  // =================================================
+
+  useEffect(() => {
+    const fetchDriverData = async () => {
+      try {
+        // ============================================
+        // GET LOGGED-IN DRIVER
+        // Token api.js interceptor automatically bhejega
+        // ============================================
+
+        const driverResponse = await api.get("/api/drivers/me");
+
+        console.log(
+          "Dashboard Driver Data:",
+          driverResponse.data
+        );
+
+        // ============================================
+        // SET DRIVER DATA
+        // ============================================
+
+        if (driverResponse.data?.driver) {
+          setDriver(driverResponse.data.driver);
+        }
+
+        // ============================================
+        // GET DRIVER DASHBOARD STATS
+        // ============================================
+
+        const dashboardResponse = await api.get(
+          "/api/drivers/dashboard"
+        );
+
+        console.log(
+          "Driver Dashboard Data:",
+          dashboardResponse.data
+        );
+
+        // ============================================
+        // SET REAL DASHBOARD DATA
+        // ============================================
+
+        if (dashboardResponse.data?.dashboard) {
+          setDashboard(
+            dashboardResponse.data.dashboard
+          );
+        }
+
+        console.log(
+          "Driver Dashboard Connected ✅"
+        );
+      } catch (error) {
+        console.error(
+          "Dashboard fetch error:",
+          error
+        );
+
+        console.error(
+          "Backend response:",
+          error.response?.data
+        );
+
+        setError(
+          error.response?.data?.message ||
+            "Unable to load driver data"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDriverData();
+  }, []);
+
+  // =================================================
+  // LOADING
+  // =================================================
+
+  if (loading) {
+    return (
+      <div className="driver-dashboard">
+        <main className="driver-main">
+          <div style={{ padding: "30px" }}>
+            Loading dashboard...
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // =================================================
+  // ERROR
+  // =================================================
+
+  if (error) {
+    return (
+      <div className="driver-dashboard">
+        <main className="driver-main">
+          <div style={{ padding: "30px" }}>
+            {error}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // =================================================
+  // DRIVER NOT FOUND
+  // =================================================
+
+  if (!driver) {
+    return (
+      <div className="driver-dashboard">
+        <main className="driver-main">
+          <div style={{ padding: "30px" }}>
+            Driver data not found
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // =================================================
+  // GO OFFLINE
+  // =================================================
 
   const handleGoOffline = () => {
     console.log("Driver going offline");
   };
 
+  // =================================================
+  // MAIN UI
+  // =================================================
 
   return (
     <div className="driver-dashboard">
-
 
       {/* =========================================
           DESKTOP SIDEBAR
@@ -52,40 +192,50 @@ const Dashboard = () => {
 
         </div>
 
-
         <nav className="driver-sidebar-nav">
+
+          {/* DRIVE */}
 
           <a
             href="/driver/dashboard"
             className="driver-sidebar-link active"
           >
             <Car size={20} />
-            <span>Drive</span>
+
+            <span>
+              Drive
+            </span>
           </a>
 
+          {/* EARNINGS */}
 
           <a
             href="/driver/earnings"
             className="driver-sidebar-link"
           >
             <Wallet size={20} />
-            <span>Earnings</span>
+
+            <span>
+              Earnings
+            </span>
           </a>
 
+          {/* PROFILE */}
 
           <a
             href="/driver/profile"
             className="driver-sidebar-link"
           >
             <UserCircle size={20} />
-            <span>Profile</span>
+
+            <span>
+              Profile
+            </span>
           </a>
 
         </nav>
 
       </aside>
-
-
 
       {/* =========================================
           MAIN CONTENT
@@ -93,9 +243,8 @@ const Dashboard = () => {
 
       <main className="driver-main">
 
-
         {/* =========================================
-            TOP STATUS AREA
+            TOP STATUS / MAP AREA
         ========================================= */}
 
         <section className="driver-map-area">
@@ -104,7 +253,6 @@ const Dashboard = () => {
 
           <div className="driver-map-grid"></div>
 
-
           {/* Today's earning */}
 
           <div className="today-earning">
@@ -112,11 +260,13 @@ const Dashboard = () => {
             <Wallet size={19} />
 
             <span>
-              Today: ₹0
+              Today: ₹
+              {Number(
+                dashboard.wallet ?? 0
+              ).toFixed(2)}
             </span>
 
           </div>
-
 
           {/* Online Status */}
 
@@ -130,7 +280,6 @@ const Dashboard = () => {
 
           </div>
 
-
           {/* Current Location */}
 
           <div className="current-location">
@@ -141,16 +290,15 @@ const Dashboard = () => {
 
           </div>
 
-
           {/* Map Pin */}
 
           <div className="map-pin">
+
             <MapPin size={20} />
+
           </div>
 
         </section>
-
-
 
         {/* =========================================
             DRIVER INFORMATION SHEET
@@ -158,13 +306,13 @@ const Dashboard = () => {
 
         <section className="driver-info-panel">
 
-
           {/* Drag handle */}
 
           <div className="panel-handle"></div>
 
-
-          {/* Greeting */}
+          {/* =========================================
+              GREETING
+          ========================================= */}
 
           <div className="driver-greeting">
 
@@ -173,12 +321,18 @@ const Dashboard = () => {
             </h1>
 
             <p>
-              {driver.vehicle} • {driver.vehicleNumber}
+
+              {driver.vehicle ||
+                "Vehicle not available"}
+
+              {" • "}
+
+              {driver.vehicle_number ||
+                "Number not available"}
+
             </p>
 
           </div>
-
-
 
           {/* =========================================
               STAT CARDS
@@ -186,17 +340,22 @@ const Dashboard = () => {
 
           <div className="driver-stat-grid">
 
-
-            {/* Total Rides */}
+            {/* =====================================
+                TOTAL RIDES
+            ===================================== */}
 
             <div className="driver-stat-card">
 
               <div className="driver-stat-icon ride-icon">
+
                 <Car size={23} />
+
               </div>
 
               <strong>
-                {driver.totalRides}
+
+                {dashboard.totalRides ?? 0}
+
               </strong>
 
               <span>
@@ -205,21 +364,27 @@ const Dashboard = () => {
 
             </div>
 
-
-
-            {/* Rating */}
+            {/* =====================================
+                RATING
+            ===================================== */}
 
             <div className="driver-stat-card">
 
               <div className="driver-stat-icon rating-icon">
+
                 <Star
                   size={23}
                   fill="currentColor"
                 />
+
               </div>
 
               <strong>
-                {driver.rating}
+
+                {Number(
+                  dashboard.rating ?? 0
+                ).toFixed(1)}
+
               </strong>
 
               <span>
@@ -228,18 +393,25 @@ const Dashboard = () => {
 
             </div>
 
-
-
-            {/* Wallet */}
+            {/* =====================================
+                WALLET
+            ===================================== */}
 
             <div className="driver-stat-card">
 
               <div className="driver-stat-icon wallet-icon">
+
                 <Wallet size={23} />
+
               </div>
 
               <strong>
-                ₹{driver.wallet}
+
+                ₹
+                {Number(
+                  dashboard.wallet ?? 0
+                ).toFixed(2)}
+
               </strong>
 
               <span>
@@ -248,10 +420,7 @@ const Dashboard = () => {
 
             </div>
 
-
           </div>
-
-
 
           {/* =========================================
               LOOKING FOR RIDES
@@ -265,19 +434,15 @@ const Dashboard = () => {
 
             </div>
 
-
             <h2>
               Looking for rides...
             </h2>
-
 
             <p>
               You will get notified when a ride is booked
             </p>
 
           </div>
-
-
 
           {/* =========================================
               GO OFFLINE
@@ -289,10 +454,12 @@ const Dashboard = () => {
           >
 
             <span className="offline-icon">
+
               <Square
                 size={14}
                 fill="currentColor"
               />
+
             </span>
 
             <span>
@@ -301,12 +468,9 @@ const Dashboard = () => {
 
           </button>
 
-
         </section>
 
       </main>
-
-
 
       {/* =========================================
           MOBILE BOTTOM NAVIGATION
@@ -314,6 +478,7 @@ const Dashboard = () => {
 
       <nav className="driver-mobile-nav">
 
+        {/* DRIVE */}
 
         <a
           href="/driver/dashboard"
@@ -328,6 +493,7 @@ const Dashboard = () => {
 
         </a>
 
+        {/* EARNINGS */}
 
         <a
           href="/driver/earnings"
@@ -342,6 +508,7 @@ const Dashboard = () => {
 
         </a>
 
+        {/* PROFILE */}
 
         <a
           href="/driver/profile"
@@ -356,13 +523,10 @@ const Dashboard = () => {
 
         </a>
 
-
       </nav>
-
 
     </div>
   );
 };
-
 
 export default Dashboard;

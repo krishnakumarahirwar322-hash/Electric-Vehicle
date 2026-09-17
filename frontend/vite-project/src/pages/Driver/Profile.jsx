@@ -1,4 +1,424 @@
-import React from "react";
+// import React from "react";
+
+// import api from "../../services/api";
+// import { useEffect, useState } from "react";
+
+// import {
+//   Car,
+//   Wallet,
+//   UserCircle,
+//   Tag,
+//   FileText,
+//   Mail,
+//   Phone,
+//   CheckCircle,
+//   LogOut,
+//   Star,
+// } from "lucide-react";
+
+// import "./Profile.css";
+
+
+// const Profile = () => {
+
+// if (loading) {
+//     return <div>Loading profile...</div>;
+// }
+
+// const [drivers, setDriver] = useState(null);
+// const [loading, setLoading] = useState(true);
+// const [error, setError] = useState("");
+
+// useEffect(() => {
+
+//     const fetchDriver = async () => {
+
+//         try {
+
+//             const response = await api.get("/api/drivers/me");
+
+//             console.log("Driver data:", response.data);
+
+//             setDriver(response.data.drivers);
+
+//         } catch (error) {
+
+//             console.error(
+//                 "Driver fetch error:",
+//                 error
+//             );
+
+//             setError("Unable to load profile");
+
+//         } finally {
+
+//             setLoading(false);
+
+//         }
+
+//     };
+
+//     fetchDriver();
+
+// }, []);
+  
+
+//   // const drivers = {
+//   //   name: "Ravi Kumar",
+//   //   email: "ravi@voltride.com",
+//   //   phone: "+918791829444",
+
+//   //   rating: 4.7,
+//   //   totalRides: 94,
+
+//   //   vehicle: "Tata Nexon EV",
+//   //   vehicleNumber: "KA01EV1234",
+//   //   license: "DL9942767",
+
+//   //   status: "Approved",
+//   // };
+
+
+
+  
+
+
+//   const handleLogout = () => {
+//     console.log("Driver logout");
+//   };
+
+
+//   return (
+//     <div className="driver-profile-page">
+
+
+//       {/* =================================================
+//           DESKTOP SIDEBAR
+//       ================================================= */}
+
+//       <aside className="driver-profile-sidebar">
+
+//         {/* Logo */}
+
+//         <div className="driver-profile-logo">
+
+//           <div className="driver-profile-logo-icon">
+//             <Car size={21} />
+//           </div>
+
+//           <span>
+//             VoltRide
+//           </span>
+
+//         </div>
+
+
+//         {/* Navigation */}
+
+//         <nav className="driver-profile-sidebar-nav">
+
+//           <a
+//             href="/driver/dashboard"
+//             className="driver-profile-side-link"
+//           >
+//             <Car size={20} />
+//             <span>Drive</span>
+//           </a>
+
+
+//           <a
+//             href="/driver/earnings"
+//             className="driver-profile-side-link"
+//           >
+//             <Wallet size={20} />
+//             <span>Earnings</span>
+//           </a>
+
+
+//           <a
+//             href="/driver/profile"
+//             className="driver-profile-side-link active"
+//           >
+//             <UserCircle size={20} />
+//             <span>Profile</span>
+//           </a>
+
+//         </nav>
+
+//       </aside>
+
+
+
+//       {/* =================================================
+//           MAIN CONTENT
+//       ================================================= */}
+
+//       <main className="driver-profile-main">
+
+
+//         {/* =================================================
+//             PROFILE HEADER
+//         ================================================= */}
+
+//         <section className="driver-profile-header">
+
+//           {/* Avatar */}
+
+//           <div className="driver-profile-avatar">
+//             R
+//           </div>
+
+
+//           {/* Name */}
+
+//           <h1>
+//             {drivers.name}
+//           </h1>
+
+
+//           {/* Rating */}
+
+//           <div className="driver-profile-rating">
+
+//             <Star
+//               size={22}
+//               fill="currentColor"
+//             />
+
+//             <span>
+//               {drivers.rating}
+//             </span>
+
+//             <span>
+//               •
+//             </span>
+
+//             <span>
+//               {drivers.totalRides} rides
+//             </span>
+
+//           </div>
+
+//         </section>
+
+
+
+//         {/* =================================================
+//             PROFILE CONTENT
+//         ================================================= */}
+
+//         <section className="driver-profile-content">
+
+
+//           {/* =================================================
+//               VEHICLE
+//           ================================================= */}
+
+//           <div className="driver-profile-card">
+
+//             <h2>
+//               Vehicle
+//             </h2>
+
+
+//             <div className="driver-profile-row">
+
+//               <Car size={27} />
+
+//               <span>
+//                 {drivers.vehicle}
+//               </span>
+
+//             </div>
+
+
+//             <div className="driver-profile-row">
+
+//               <Tag size={27} />
+
+//               <span>
+//                 {drivers.vehicleNumber}
+//               </span>
+
+//             </div>
+
+
+//             <div className="driver-profile-row">
+
+//               <FileText size={27} />
+
+//               <span>
+//                 License: {drivers.license}
+//               </span>
+
+//             </div>
+
+//           </div>
+
+
+
+//           {/* =================================================
+//               CONTACT
+//           ================================================= */}
+
+//           <div className="driver-profile-card">
+
+//             <h2>
+//               Contact
+//             </h2>
+
+
+//             <div className="driver-profile-row">
+
+//               <Mail size={27} />
+
+//               <span>
+//                 {drivers.email}
+//               </span>
+
+//             </div>
+
+
+//             <div className="driver-profile-row">
+
+//               <Phone size={27} />
+
+//               <span>
+//                 {drivers.phone}
+//               </span>
+
+//             </div>
+
+//           </div>
+
+
+
+//           {/* =================================================
+//               ACCOUNT STATUS
+//           ================================================= */}
+
+//           <div className="driver-account-status">
+
+//             <h2>
+//               Account Status
+//             </h2>
+
+
+//             <div className="driver-status-row">
+
+//               <CheckCircle size={27} />
+
+//               <span>
+//                 {drivers.status} ✓
+//               </span>
+
+//             </div>
+
+//           </div>
+
+
+
+//           {/* =================================================
+//               SIGN OUT
+//           ================================================= */}
+
+//           <button
+//             className="driver-signout-button"
+//             onClick={handleLogout}
+//           >
+
+//             <LogOut size={20} />
+
+//             <span>
+//               Sign Out
+//             </span>
+
+//           </button>
+
+
+//         </section>
+
+//       </main>
+
+
+
+//       {/* =================================================
+//           MOBILE BOTTOM NAVIGATION
+//       ================================================= */}
+
+//       <nav className="driver-profile-mobile-nav">
+
+
+//         <a
+//           href="/driver/dashboard"
+//           className="driver-profile-mobile-link"
+//         >
+
+//           <Car size={25} />
+
+//           <span>
+//             Drive
+//           </span>
+
+//         </a>
+
+
+//         <a
+//           href="/driver/earnings"
+//           className="driver-profile-mobile-link"
+//         >
+
+//           <Wallet size={25} />
+
+//           <span>
+//             Earnings
+//           </span>
+
+//         </a>
+
+
+//         <a
+//           href="/driver/profile"
+//           className="driver-profile-mobile-link active"
+//         >
+
+//           <UserCircle size={25} />
+
+//           <span>
+//             Profile
+//           </span>
+
+//         </a>
+
+
+//       </nav>
+
+
+//     </div>
+//   );
+// };
+
+
+// export default Profile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useEffect, useState } from "react";
+
+import api from "../../services/api";
 
 import {
   Car,
@@ -18,28 +438,123 @@ import "./Profile.css";
 
 const Profile = () => {
 
-  const driver = {
-    name: "Ravi Kumar",
-    email: "ravi@voltride.com",
-    phone: "+918791829444",
+  // =================================================
+  // STATE
+  // =================================================
 
-    rating: 4.7,
-    totalRides: 94,
+  const [driver, setDriver] = useState(null);
 
-    vehicle: "Tata Nexon EV",
-    vehicleNumber: "KA01EV1234",
-    license: "DL9942767",
+  const [loading, setLoading] = useState(true);
 
-    status: "Approved",
-  };
+  const [error, setError] = useState("");
 
+
+  // =================================================
+  // GET LOGGED-IN DRIVER
+  // =================================================
+
+  useEffect(() => {
+
+    const fetchDriver = async () => {
+
+      try {
+
+        const response = await api.get("/api/drivers/me");
+
+        console.log("Driver API response:", response.data);
+
+        setDriver(response.data.driver);
+
+      } catch (error) {
+
+        console.error(
+          "Driver fetch error:",
+          error
+        );
+
+        setError(
+          error.response?.data?.message ||
+          "Unable to load profile"
+        );
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+
+    fetchDriver();
+
+  }, []);
+
+
+  // =================================================
+  // LOADING
+  // =================================================
+
+  if (loading) {
+
+    return (
+      <div className="driver-profile-loading">
+        Loading profile...
+      </div>
+    );
+
+  }
+
+
+  // =================================================
+  // ERROR
+  // =================================================
+
+  if (error) {
+
+    return (
+      <div className="driver-profile-error">
+        {error}
+      </div>
+    );
+
+  }
+
+
+  // =================================================
+  // DRIVER NOT FOUND
+  // =================================================
+
+  if (!driver) {
+
+    return (
+      <div className="driver-profile-error">
+        Driver profile not found
+      </div>
+    );
+
+  }
+
+
+  // =================================================
+  // LOGOUT
+  // =================================================
 
   const handleLogout = () => {
-    console.log("Driver logout");
+
+    localStorage.removeItem("token");
+
+    window.location.href = "/login";
+
   };
 
 
+  // =================================================
+  // MAIN UI
+  // =================================================
+
   return (
+
     <div className="driver-profile-page">
 
 
@@ -49,12 +564,15 @@ const Profile = () => {
 
       <aside className="driver-profile-sidebar">
 
+
         {/* Logo */}
 
         <div className="driver-profile-logo">
 
           <div className="driver-profile-logo-icon">
+
             <Car size={21} />
+
           </div>
 
           <span>
@@ -68,31 +586,54 @@ const Profile = () => {
 
         <nav className="driver-profile-sidebar-nav">
 
+
+          {/* Drive */}
+
           <a
             href="/driver/dashboard"
             className="driver-profile-side-link"
           >
+
             <Car size={20} />
-            <span>Drive</span>
+
+            <span>
+              Drive
+            </span>
+
           </a>
 
+
+          {/* Earnings */}
 
           <a
             href="/driver/earnings"
             className="driver-profile-side-link"
           >
+
             <Wallet size={20} />
-            <span>Earnings</span>
+
+            <span>
+              Earnings
+            </span>
+
           </a>
 
+
+          {/* Profile */}
 
           <a
             href="/driver/profile"
             className="driver-profile-side-link active"
           >
+
             <UserCircle size={20} />
-            <span>Profile</span>
+
+            <span>
+              Profile
+            </span>
+
           </a>
+
 
         </nav>
 
@@ -113,10 +654,16 @@ const Profile = () => {
 
         <section className="driver-profile-header">
 
+
           {/* Avatar */}
 
           <div className="driver-profile-avatar">
-            R
+
+            {driver.name
+              ? driver.name.charAt(0).toUpperCase()
+              : "D"
+            }
+
           </div>
 
 
@@ -137,7 +684,7 @@ const Profile = () => {
             />
 
             <span>
-              {driver.rating}
+              {driver.rating ?? "0.0"}
             </span>
 
             <span>
@@ -145,10 +692,11 @@ const Profile = () => {
             </span>
 
             <span>
-              {driver.totalRides} rides
+              {driver.totalRides ?? 0} rides
             </span>
 
           </div>
+
 
         </section>
 
@@ -172,37 +720,44 @@ const Profile = () => {
             </h2>
 
 
+            {/* Vehicle */}
+
             <div className="driver-profile-row">
 
               <Car size={27} />
 
               <span>
-                {driver.vehicle}
+                {driver.vehicle || "Not available"}
               </span>
 
             </div>
 
+
+            {/* Vehicle Number */}
 
             <div className="driver-profile-row">
 
               <Tag size={27} />
 
               <span>
-                {driver.vehicleNumber}
+                {driver.vehicle_number || "Not available"}
               </span>
 
             </div>
 
+
+            {/* License */}
 
             <div className="driver-profile-row">
 
               <FileText size={27} />
 
               <span>
-                License: {driver.license}
+                License: {driver.license_no || "Not available"}
               </span>
 
             </div>
+
 
           </div>
 
@@ -219,6 +774,8 @@ const Profile = () => {
             </h2>
 
 
+            {/* Email */}
+
             <div className="driver-profile-row">
 
               <Mail size={27} />
@@ -230,15 +787,18 @@ const Profile = () => {
             </div>
 
 
+            {/* Phone */}
+
             <div className="driver-profile-row">
 
               <Phone size={27} />
 
               <span>
-                {driver.phone}
+                {driver.phone || "Not available"}
               </span>
 
             </div>
+
 
           </div>
 
@@ -260,7 +820,7 @@ const Profile = () => {
               <CheckCircle size={27} />
 
               <span>
-                {driver.status} ✓
+                {driver.status || "Pending"} ✓
               </span>
 
             </div>
@@ -289,6 +849,7 @@ const Profile = () => {
 
         </section>
 
+
       </main>
 
 
@@ -299,6 +860,8 @@ const Profile = () => {
 
       <nav className="driver-profile-mobile-nav">
 
+
+        {/* Drive */}
 
         <a
           href="/driver/dashboard"
@@ -314,6 +877,8 @@ const Profile = () => {
         </a>
 
 
+        {/* Earnings */}
+
         <a
           href="/driver/earnings"
           className="driver-profile-mobile-link"
@@ -327,6 +892,8 @@ const Profile = () => {
 
         </a>
 
+
+        {/* Profile */}
 
         <a
           href="/driver/profile"
@@ -346,7 +913,9 @@ const Profile = () => {
 
 
     </div>
+
   );
+
 };
 
 

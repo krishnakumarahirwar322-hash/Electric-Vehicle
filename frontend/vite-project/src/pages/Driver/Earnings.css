@@ -1,0 +1,395 @@
+/* /*  =========================================================
+   EARNINGS MAIN
+========================================================= */
+
+.earnings-main {
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   EARNINGS HEADER
+========================================================= */
+
+.earnings-header {
+  width: 100%;
+
+  padding-bottom: 12px;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+
+.earnings-header h1 {
+  margin: 0;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 22px;
+
+  font-weight: 700;
+
+  color: #222222;
+}
+
+
+.earnings-header p {
+  margin: 4px 0 0;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 13px;
+
+  color: #555555;
+}
+
+
+
+/* =========================================================
+   TOTAL EARNED
+========================================================= */
+
+.total-earned-card {
+  width: 100%;
+
+  margin-top: 14px;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  background: #079f75;
+
+  border-radius: 15px;
+
+  color: #ffffff;
+}
+
+
+.total-earned-title {
+  display: block;
+
+  margin-bottom: 3px;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+
+.total-earned-card h2 {
+  margin: 0;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 30px;
+
+  line-height: 1.2;
+
+  font-weight: 700;
+}
+
+
+
+/* =========================================================
+   WALLET
+========================================================= */
+
+.earnings-wallet {
+  width: fit-content;
+
+  margin-top: 12px;
+
+  padding: 5px 9px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  background: rgba(255, 255, 255, 0.15);
+
+  border-radius: 20px;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 600;
+}
+
+
+.earnings-wallet svg {
+  flex-shrink: 0;
+}
+
+
+
+/* =========================================================
+   TODAY / WEEK / MONTH
+========================================================= */
+
+.earning-summary {
+  width: 100%;
+
+  margin-top: 12px;
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 8px;
+}
+
+
+.earning-summary-card {
+  min-height: 51px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #f5f5f5;
+
+  border-radius: 9px;
+
+  font-family: Arial, sans-serif;
+}
+
+
+.earning-summary-card span {
+  margin-bottom: 3px;
+
+  font-size: 10px;
+
+  color: #222222;
+}
+
+
+.earning-summary-card strong {
+  font-size: 13px;
+
+  color: #222222;
+}
+
+
+
+/* =========================================================
+   RECENT RIDES
+========================================================= */
+
+.recent-rides-section {
+  width: 100%;
+
+  margin-top: 20px;
+}
+
+
+.recent-rides-section h2 {
+  margin: 0;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  color: #222222;
+}
+
+
+.no-rides {
+  margin-top: 25px;
+
+  text-align: center;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 12px;
+
+  color: #777777;
+}
+
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  .earnings-main {
+    padding: 30px 12px 80px !important;
+  }
+
+
+  /* Header */
+
+  .earnings-header {
+    padding-bottom: 10px;
+  }
+
+
+  .earnings-header h1 {
+    font-size: 20px;
+  }
+
+
+  .earnings-header p {
+    margin-top: 3px;
+
+    font-size: 11px;
+  }
+
+
+  /* Total earned */
+
+  .total-earned-card {
+    margin-top: 12px;
+
+    min-height: 121px;
+
+    padding: 18px 16px;
+
+    border-radius: 15px;
+  }
+
+
+  .total-earned-title {
+    font-size: 10px;
+  }
+
+
+  .total-earned-card h2 {
+    font-size: 29px;
+  }
+
+
+  /* Wallet */
+
+  .earnings-wallet {
+    margin-top: 9px;
+
+    padding: 5px 8px;
+
+    font-size: 9px;
+  }
+
+
+  /* Summary */
+
+  .earning-summary {
+    margin-top: 12px;
+
+    gap: 7px;
+  }
+
+
+  .earning-summary-card {
+    min-height: 51px;
+
+    border-radius: 9px;
+  }
+
+
+  .earning-summary-card span {
+    font-size: 9px;
+  }
+
+
+  .earning-summary-card strong {
+    font-size: 12px;
+  }
+
+
+  /* Recent rides */
+
+  .recent-rides-section {
+    margin-top: 20px;
+  }
+
+
+  .recent-rides-section h2 {
+    font-size: 13px;
+  }
+
+
+  .no-rides {
+    margin-top: 25px;
+
+    font-size: 11px;
+  }
+
+}  */
+
+
+
+.recent-rides-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.ride-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9fafb;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.ride-route {
+  font-weight: 600;
+  font-size: 14px;
+  color: #111827;
+}
+
+.ride-date {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.ride-amount {
+  font-weight: 700;
+  color: #059669;
+}
+
+.recent-rides-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.ride-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.ride-route {
+  font-weight: 600;
+  font-size: 14px;
+  color: #111827;
+  margin: 0;
+}
+
+.ride-amount {
+  font-weight: 700;
+  font-size: 16px;
+  color: #059669;
+}

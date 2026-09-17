@@ -17,9 +17,11 @@ import RideManagement from "../pages/Admin/RideManagement";
 import Settings from "../pages/Admin/Settings";
 
 
+
 /* Driver */
 import DriverDashboard from "../pages/Driver/Dashboard";
 import Profile from "../pages/Driver/Profile";
+import Earnings from "../pages/Driver/Earnings";
 
 
 import { Users } from "lucide-react";
@@ -125,6 +127,11 @@ const AppRoutes = () => {
 
       <Route path="/driver/profile" 
       element={<Profile />} />
+
+       <Route
+          path="/driver/earnings"
+          element={<Earnings/>}
+        />
 
 
        {/* user */}
