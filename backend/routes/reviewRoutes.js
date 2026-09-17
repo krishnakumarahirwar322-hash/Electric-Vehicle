@@ -3,6 +3,21 @@ const router = express.Router();
 const db = require("../config/db");
 const authMiddleware = require("../middleware/authMiddleware");
 
+
+// ================= GET REVIEWS FOR A RIDE =================
+router.get("/:rideId", authMiddleware, (req, res) => {
+    const rideId = req.params.rideId;
+
+    const sql = `SELECT * FROM reviews WHERE ride_id = ?`;
+    db.query(sql, [rideId], (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: "Database error" });
+
+        res.status(200).json({
+            success: true,
+            reviews: results
+        });
+    });
+});
 // ================= ADD REVIEW & RATING =================
 router.post("/:rideId", authMiddleware, (req, res) => {
     const rideId = req.params.rideId;

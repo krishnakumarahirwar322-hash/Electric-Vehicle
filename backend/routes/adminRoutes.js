@@ -3,15 +3,16 @@ const router = express.Router();
 const db = require("../config/db");
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
+const adminController = require("../controllers/adminController");
 
-// ================= GET ADMIN DASHBOARD STATS =================
+// ================= 1. GET ADMIN DASHBOARD STATS =================
 router.get("/stats", authMiddleware, roleMiddleware("admin"), (req, res) => {
     const statsQuery = `
         SELECT 
             (SELECT COUNT(*) FROM users WHERE role = 'user') AS total_users,
-            (SELECT COUNT(*) FROM drivers) AS total_drivers,
+            (SELECT COUNT(*) FROM users WHERE role = 'driver') AS total_drivers,
             (SELECT COUNT(*) FROM rides) AS total_rides,
-             (SELECT COUNT(*) FROM rides) AS active_rides,
+            (SELECT COUNT(*) FROM rides WHERE status = 'accepted' OR status = 'ongoing') AS active_rides,
             (SELECT COUNT(*) FROM rides WHERE status = 'completed') AS completed_rides,
             (SELECT COUNT(*) FROM rides WHERE status = 'cancelled') AS cancel_rides,
             (SELECT COALESCE(SUM(amount), 0) FROM payments WHERE payment_status = 'completed') AS total_revenue,
@@ -30,5 +31,9 @@ router.get("/stats", authMiddleware, roleMiddleware("admin"), (req, res) => {
         });
     });
 });
+
+// ================= 2. GET ALL USERS & DRIVERS ACCOUNTS =================
+// Note: Agar direct test kar rahe hain (bina login header ke) toh authMiddleware hata kar bhi test kar sakte hain.
+router.get("/accounts", adminController.getAllAccounts);
 
 module.exports = router;
