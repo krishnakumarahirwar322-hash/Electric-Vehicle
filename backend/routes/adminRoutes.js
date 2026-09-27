@@ -24,16 +24,50 @@ router.get("/stats", authMiddleware, roleMiddleware("admin"), (req, res) => {
             console.log("Admin stats error:", err);
             return res.status(500).json({ success: false, message: "Database query failed" });
         }
-
-        res.status(200).json({
-            success: true,
-            dashboard: results[0]
-        });
+        res.status(200).json({ success: true, dashboard: results[0] });
     });
 });
 
-// ================= 2. GET ALL USERS & DRIVERS ACCOUNTS =================
-// Note: Agar direct test kar rahe hain (bina login header ke) toh authMiddleware hata kar bhi test kar sakte hain.
+// ================= 2. GET ALL ACCOUNTS =================
 router.get("/accounts", adminController.getAllAccounts);
+
+// ================= 3. GET ALL RIDES (Admin) =================
+router.get("/rides", authMiddleware, roleMiddleware("admin"), (req, res) => {
+    const sql = `
+        SELECT 
+            r.id,
+            r.pickup,
+            r.destination,
+            r.fare,
+            r.distance,
+            r.status,
+            r.created_at,
+            u.name AS user_name,
+            u.email AS user_email,
+            d_user.name AS driver_name
+        FROM rides r
+        LEFT JOIN users u ON r.user_id = u.id
+        LEFT JOIN drivers d ON r.driver_id = d.id
+        LEFT JOIN users d_user ON d.user_id = d_user.id
+        ORDER BY r.id DESC
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error("Admin rides error:", err);
+            return res.status(500).json({ success: false, message: "Failed to fetch rides" });
+        }
+        res.json({ success: true, rides: results });
+    });
+});
+
+// ================= 4. DELETE DRIVER =================
+router.delete("/drivers/:id", authMiddleware, roleMiddleware("admin"), (req, res) => {
+    const driverId = req.params.id;
+    db.query("DELETE FROM drivers WHERE id = ?", [driverId], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: "Delete failed" });
+        res.json({ success: true, message: "Driver deleted" });
+    });
+});
 
 module.exports = router;
