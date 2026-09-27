@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import L from "leaflet";
 
 import api from "../../services/api";
 
@@ -34,6 +35,17 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState("");
+  const [requests, setRequests] = useState([]);
+  const [activeRide, setActiveRide] = useState(null);
+  const [isOnline, setIsOnline] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpSecondsLeft, setOtpSecondsLeft] = useState(null);
+  const driverLocationWatch = useRef(null);
+  const mapElement = useRef(null);
+  const mapRef = useRef(null);
+  const rideMarkerRef = useRef(null);
+  const driverMarkerRef = useRef(null);
+  const activeRouteRef = useRef(null);
 
   // =================================================
   // GET DRIVER + DASHBOARD DATA
@@ -60,6 +72,7 @@ const Dashboard = () => {
 
         if (driverResponse.data?.driver) {
           setDriver(driverResponse.data.driver);
+          setIsOnline(Boolean(driverResponse.data.driver.is_online));
         }
 
         // ============================================
@@ -110,6 +123,90 @@ const Dashboard = () => {
 
     fetchDriverData();
   }, []);
+
+  useEffect(() => {
+    if (!driver) return undefined;
+    const refreshRideData = async () => {
+      try {
+        const [requestResponse, activeResponse] = await Promise.all([
+          api.get("/api/rides/driver/requests"),
+          api.get("/api/rides/driver/active")
+        ]);
+        setRequests(requestResponse.data?.requests || []);
+        setActiveRide(activeResponse.data?.ride || null);
+      } catch (requestError) {
+        console.error("Ride request refresh failed:", requestError.response?.data || requestError.message);
+      }
+    };
+    refreshRideData();
+    const timer = setInterval(refreshRideData, 5000);
+    return () => clearInterval(timer);
+  }, [driver]);
+
+  useEffect(() => {
+    if (activeRide?.status !== "arrived" || !activeRide.otp_expires_at) {
+      setOtpSecondsLeft(null);
+      return undefined;
+    }
+
+    const updateCountdown = () => {
+      const seconds = Math.max(0, Math.ceil((new Date(activeRide.otp_expires_at).getTime() - Date.now()) / 1000));
+      setOtpSecondsLeft(seconds);
+      if (seconds === 0) setActiveRide(null);
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, [activeRide]);
+
+  useEffect(() => {
+    if (!activeRide || !navigator.geolocation) return undefined;
+    driverLocationWatch.current = navigator.geolocation.watchPosition(({ coords }) => {
+      api.post(`/api/rides/${activeRide.id}/location`, { lat: coords.latitude, lng: coords.longitude }).catch(() => {});
+    });
+    return () => navigator.geolocation.clearWatch(driverLocationWatch.current);
+  }, [activeRide]);
+
+  useEffect(() => {
+    if (loading || !mapElement.current || mapRef.current) return undefined;
+    const map = L.map(mapElement.current).setView([28.6139, 77.209], 13);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap contributors" }).addTo(map);
+    mapRef.current = map;
+    const resizeTimer = window.setTimeout(() => map.invalidateSize(), 0);
+    return () => {
+      window.clearTimeout(resizeTimer);
+      map.remove();
+      mapRef.current = null;
+    };
+  }, [loading]);
+
+  useEffect(() => {
+    if (!mapRef.current || !activeRide?.user_lat || !activeRide?.user_lng) return;
+    if (rideMarkerRef.current) rideMarkerRef.current.remove();
+    rideMarkerRef.current = L.circleMarker([Number(activeRide.user_lat), Number(activeRide.user_lng)], { radius: 9, color: "#078b65", fillColor: "#19bd87", fillOpacity: 1, weight: 3 }).addTo(mapRef.current).bindTooltip("Passenger pickup");
+
+    const driverPosition = activeRide.driver_lat && activeRide.driver_lng
+      ? [Number(activeRide.driver_lat), Number(activeRide.driver_lng)]
+      : null;
+    if (driverPosition) {
+      if (driverMarkerRef.current) driverMarkerRef.current.remove();
+      driverMarkerRef.current = L.circleMarker(driverPosition, { radius: 9, color: "#078b65", fillColor: "#19bd87", fillOpacity: 1, weight: 3 }).addTo(mapRef.current).bindTooltip("You");
+    }
+    const target = activeRide.status === "started"
+      ? [Number(activeRide.destination_lat), Number(activeRide.destination_lng)]
+      : [Number(activeRide.user_lat), Number(activeRide.user_lng)];
+    if (!driverPosition || !target.every(Number.isFinite)) return;
+    fetch(`https://router.project-osrm.org/route/v1/driving/${driverPosition[1]},${driverPosition[0]};${target[1]},${target[0]}?overview=full&geometries=geojson`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.routes?.[0] || !mapRef.current) return;
+        if (activeRouteRef.current) activeRouteRef.current.remove();
+        activeRouteRef.current = L.geoJSON(data.routes[0].geometry, { style: { color: "#087f5b", weight: 6 } }).addTo(mapRef.current);
+        mapRef.current.fitBounds(activeRouteRef.current.getBounds(), { padding: [35, 35] });
+      })
+      .catch(() => {});
+  }, [activeRide]);
 
   // =================================================
   // LOADING
@@ -163,8 +260,43 @@ const Dashboard = () => {
   // GO OFFLINE
   // =================================================
 
-  const handleGoOffline = () => {
-    console.log("Driver going offline");
+  const handleGoOffline = async () => {
+    try {
+      const response = await api.put("/api/drivers/online", { is_online: !isOnline });
+      setIsOnline(response.data.is_online);
+    } catch (statusError) {
+      setError(statusError.response?.data?.message || "Online status update failed");
+    }
+  };
+
+  const acceptRide = async (rideId) => {
+    await api.put(`/api/rides/${rideId}/accept`);
+    setRequests((items) => items.filter((item) => item.id !== rideId));
+  };
+
+  const rejectRide = async (rideId) => {
+    try {
+      await api.post(`/api/rides/${rideId}/reject`);
+      setRequests((items) => items.filter((item) => item.id !== rideId));
+    } catch (rejectError) {
+      setError(rejectError.response?.data?.message || "Ride rejection failed");
+    }
+  };
+
+  const markArrived = async () => {
+    await api.post(`/api/rides/${activeRide.id}/arrived`);
+    setActiveRide((ride) => ({ ...ride, status: "arrived" }));
+  };
+
+  const verifyOtp = async () => {
+    await api.post(`/api/rides/${activeRide.id}/verify-otp`, { otp });
+    setActiveRide((ride) => ({ ...ride, status: "started" }));
+    setOtp("");
+  };
+
+  const completeRide = async () => {
+    await api.put(`/api/rides/${activeRide.id}/complete`);
+    setActiveRide(null);
   };
 
   // =================================================
@@ -251,7 +383,7 @@ const Dashboard = () => {
 
           {/* Fake map/grid background */}
 
-          <div className="driver-map-grid"></div>
+          <div className="driver-map-grid" ref={mapElement}></div>
 
           {/* Today's earning */}
 
@@ -275,7 +407,7 @@ const Dashboard = () => {
             <span className="online-dot"></span>
 
             <span>
-              ONLINE
+              {isOnline ? "ONLINE" : "OFFLINE"}
             </span>
 
           </div>
@@ -426,6 +558,32 @@ const Dashboard = () => {
               LOOKING FOR RIDES
           ========================================= */}
 
+          {requests.length > 0 && !activeRide && (
+            <div className="ride-requests-card">
+              <h2>New ride requests</h2>
+              {requests.map((ride) => (
+                <div className="driver-request" key={ride.id}>
+                  <div><strong>{ride.pickup}</strong><span>to {ride.destination}</span></div>
+                  <div className="request-actions">
+                    <button onClick={() => acceptRide(ride.id)}>Accept</button>
+                    <button className="reject-request-button" onClick={() => rejectRide(ride.id)}>Reject</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeRide && (
+            <div className="active-ride-card">
+              <h2>Active ride</h2>
+              <p>{activeRide.pickup} to {activeRide.destination}</p>
+              <strong>Status: {activeRide.status}</strong>
+              {activeRide.status === "accepted" && <button onClick={markArrived}>I have arrived</button>}
+              {activeRide.status === "arrived" && <><p className="otp-countdown">OTP expires in {Math.floor(otpSecondsLeft / 60)}:{String(otpSecondsLeft % 60).padStart(2, "0")}</p><div className="otp-entry"><input value={otp} onChange={(event) => setOtp(event.target.value)} placeholder="Enter user OTP" maxLength="6" /><button onClick={verifyOtp}>Start trip</button></div></>}
+              {activeRide.status === "started" && <button onClick={completeRide}>Complete ride</button>}
+            </div>
+          )}
+
           <div className="looking-rides-card">
 
             <div className="search-icon">
@@ -435,11 +593,11 @@ const Dashboard = () => {
             </div>
 
             <h2>
-              Looking for rides...
+              {isOnline ? "Looking for rides..." : "You are offline"}
             </h2>
 
             <p>
-              You will get notified when a ride is booked
+              {isOnline ? "Online drivers receive new requests here" : "Go online to receive ride requests"}
             </p>
 
           </div>
@@ -463,7 +621,7 @@ const Dashboard = () => {
             </span>
 
             <span>
-              Go Offline
+              {isOnline ? "Go Offline" : "Go Online"}
             </span>
 
           </button>

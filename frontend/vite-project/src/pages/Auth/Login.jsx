@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import "./Login.css";
 import { loginUser } from "../../services/authApi.js";
@@ -186,6 +186,12 @@ const navigate = useNavigate();
 
           </div>
 
+
+          {/* FORGOT PASSWORD */}
+
+          <div className="auth-forgot-password">
+            <Link to="/forgot-password">Forgot Password?</Link>
+          </div>
 
           {/* LOGIN BUTTON */}
 

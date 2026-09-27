@@ -191,7 +191,7 @@
 import React, { useState, useEffect } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import DriverCard from "../../components/DriverCard/DriverCard";
-import { getAllDrivers, updateDriverStatus } from "../../services/driverService";
+import { getAllDrivers, approveDriver } from "../../services/driverService";
 import "./DriverManagement.css";
 
 const DriverManagement = () => {
@@ -232,15 +232,16 @@ const DriverManagement = () => {
   /* =================================
       2. APPROVE DRIVER (DB UPDATE)
   ================================= */
-  const handleApprove = async (driverId) => {
+  const handleApprove = async (driverId, userId) => {
     try {
-      await updateDriverStatus(driverId, "approved");
+      await approveDriver({ driverId, userId });
 
       // Robust State update (d.id ya user_id fallback ke sath)
       setDrivers((previousDrivers) =>
         previousDrivers.map((driver) => {
-          const currentId = driver.driver_id || driver.id || driver.user_id;
-          return currentId === driverId ? { ...driver, status: "approved" } : driver;
+          const currentId = driver.driver_id || driver.user_id;
+          const selectedId = driverId || userId;
+          return currentId === selectedId ? { ...driver, status: "approved" } : driver;
         })
       );
     } catch (error) {
@@ -305,8 +306,8 @@ const DriverManagement = () => {
           ) : filteredDrivers.length > 0 ? (
             filteredDrivers.map((driver, index) => {
               // Priority Unique Key assign
-              const uniqueKey = driver.driver_id || driver.id || driver.user_id || index;
-              const targetDriverId = driver.driver_id || driver.id || driver.user_id;
+              const uniqueKey = `${driver.driver_id || "account"}-${driver.user_id || index}`;
+              const targetDriverId = driver.driver_id;
 
               return (
                 <DriverCard
@@ -314,16 +315,18 @@ const DriverManagement = () => {
                   driver={{
                     ...driver,
                     id: targetDriverId,
+                    driver_id: driver.driver_id,
+                    user_id: driver.user_id,
                     name: driver.name || "Driver",
                     email: driver.email || "",
                     vehicle: driver.vehicle_model || driver.vehicle || driver.model || "EV Vehicle",
                     registrationNumber:
                       driver.vehicle_number || driver.registrationNumber || driver.license_no || "N/A",
-                    rating: driver.rating || "4.5",
-                    rides: driver.rides || 0,
-                    status: driver.status || "APPROVED"
+                    rating: Number(driver.rating || 0).toFixed(1),
+                    rides: Number(driver.rides || 0),
+                    status: driver.status || "pending"
                   }}
-                  onApprove={() => handleApprove(targetDriverId)}
+                  onApprove={() => handleApprove(targetDriverId, driver.user_id)}
                 />
               );
             })

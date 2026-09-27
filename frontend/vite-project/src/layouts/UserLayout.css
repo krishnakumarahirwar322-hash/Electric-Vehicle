@@ -1,4 +1,4 @@
-/* .user-layout {
+.user-layout {
 
     width: 100%;
 
@@ -20,8 +20,6 @@
 }
 
 
-/* Mobile */
-/* 
 @media (max-width: 768px) {
 
     .user-layout-content {
@@ -32,4 +30,4 @@
 
     }
 
-}  */
+}

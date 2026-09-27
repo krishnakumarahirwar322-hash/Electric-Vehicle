@@ -196,6 +196,8 @@
     );
 
   background-size: 72px 72px;
+
+  z-index: 1;
 }
 
 
@@ -1110,4 +1112,83 @@
     font-size: 12px;
   }
 
+}
+
+.ride-requests-card,
+.active-ride-card {
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px solid #dcebe4;
+  border-radius: 14px;
+  background: #f7fbf9;
+}
+
+.ride-requests-card h2,
+.active-ride-card h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.driver-request {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #e2ece7;
+}
+
+.driver-request div {
+  display: grid;
+  gap: 4px;
+}
+
+.driver-request span,
+.active-ride-card p {
+  color: #66736d;
+  font-size: 12px;
+}
+
+.driver-request button,
+.active-ride-card button {
+  border: 0;
+  border-radius: 8px;
+  background: #079b70;
+  color: #fff;
+  padding: 9px 13px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.otp-entry {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.otp-entry input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid #d6e3dd;
+  border-radius: 8px;
+  padding: 0 10px;
+}
+
+.request-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.request-actions .reject-request-button {
+  background: #fff;
+  border: 1px solid #d84b4b;
+  color: #c03939;
+}
+
+.otp-countdown {
+  margin: 10px 0 0;
+  color: #b23a3a;
+  font-size: 12px;
+  font-weight: 700;
 }

@@ -1,102 +1,30 @@
-// import React from "react";
-// import {
-//     Car,
-//     Clock3,
-//     UserCircle
-// } from "lucide-react";
+import React from "react";
+import { Car, Clock3, LogOut, UserCircle, Zap } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import "./UserSideBar.css";
 
-// import { useLocation, useNavigate } from "react-router-dom";
+const UserSidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const menuItems = [
+    { name: "Ride", icon: Car, path: "/user/home" },
+    { name: "History", icon: Clock3, path: "/user/history" },
+    { name: "Profile", icon: UserCircle, path: "/user/profile" }
+  ];
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+  return (
+    <aside className="user-sidebar">
+      <div className="user-sidebar-logo"><div className="user-logo-icon"><Zap size={20} fill="currentColor" /></div><div><h2>VoltRide</h2><span>User panel</span></div></div>
+      <nav className="user-sidebar-menu">
+        {menuItems.map(({ name, icon: Icon, path }) => <button key={path} className={`user-sidebar-item ${location.pathname === path ? "active" : ""}`} onClick={() => navigate(path)}><Icon size={20} /><span>{name}</span></button>)}
+      </nav>
+      <button className="user-sidebar-logout" onClick={logout}><LogOut size={18} /><span>Logout</span></button>
+    </aside>
+  );
+};
 
-// import "./UserSidebar.css";
-
-
-// const UserSidebar = () => {
-
-//     const navigate = useNavigate();
-//     const location = useLocation();
-
-
-//     const menuItems = [
-//         {
-//             name: "Ride",
-//             icon: Car,
-//             path: "/user/home"
-//         },
-//         {
-//             name: "History",
-//             icon: Clock3,
-//             path: "/user/history"
-//         },
-//         {
-//             name: "Profile",
-//             icon: UserCircle,
-//             path: "/user/profile"
-//         }
-//     ];
-
-
-//     return (
-
-//         <aside className="user-sidebar">
-
-//             {/* Logo */}
-
-//             <div className="user-sidebar-logo">
-
-//                 <div className="user-logo-icon">
-//                     ⚡
-//                 </div>
-
-//                 <div>
-//                     <h2>VoltRide</h2>
-//                     <span>User</span>
-//                 </div>
-
-//             </div>
-
-
-//             {/* Navigation */}
-
-//             <nav className="user-sidebar-menu">
-
-//                 {menuItems.map((item) => {
-
-//                     const Icon = item.icon;
-
-//                     const active =
-//                         location.pathname === item.path;
-
-//                     return (
-
-//                         <button
-//                             key={item.path}
-//                             className={`user-sidebar-item ${
-//                                 active ? "active" : ""
-//                             }`}
-//                             onClick={() =>
-//                                 navigate(item.path)
-//                             }
-//                         >
-
-//                             <Icon size={21} />
-
-//                             <span>
-//                                 {item.name}
-//                             </span>
-
-//                         </button>
-
-//                     );
-
-//                 })}
-
-//             </nav>
-
-//         </aside>
-
-//     );
-
-// };
-
-
-// export default UserSidebar;
+export default UserSidebar;

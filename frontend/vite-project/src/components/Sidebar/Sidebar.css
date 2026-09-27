@@ -166,6 +166,32 @@
   margin-top: 2px;
 }
 
+.sidebar-logout,
+.mobile-logout-link {
+  border: none;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.sidebar-logout {
+  width: 100%;
+  padding: 12px 14px;
+  margin-top: 10px;
+}
+
+.sidebar-logout:hover,
+.mobile-logout-link:hover {
+  background: #fee2e2;
+}
+
 
 /* =========================
    MOBILE NAVIGATION
@@ -230,11 +256,24 @@
     font-size: 9px;
 
     font-weight: 500;
+    border: none;
+    background: transparent;
+    cursor: pointer;
   }
 
   .mobile-nav-link.active {
     color: #079b70;
 
     font-weight: 600;
+  }
+
+  .admin-settings-mobile-logout {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .admin-settings-mobile-logout {
+    display: none !important;
   }
 }

@@ -33,6 +33,8 @@ const Dashboard = () => {
   total_available_charging_ports: 0,
 });
 
+  const [lastSevenDays, setLastSevenDays] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
 
@@ -71,6 +73,8 @@ const Dashboard = () => {
         setDashboard(response.data.dashboard);
 
       }
+
+      setLastSevenDays(response.data?.lastSevenDays || []);
 
 
       console.log(
@@ -329,15 +333,28 @@ const Dashboard = () => {
 
           <div className="chart-container">
 
-            <div className="chart-placeholder">
+            {lastSevenDays.length > 0 ? (
+              <div className="rides-chart" aria-label="Ride bookings for the last seven days">
+                {lastSevenDays.map((day) => {
+                  const maxRides = Math.max(...lastSevenDays.map((item) => item.rides), 1);
+                  const barHeight = day.rides === 0 ? 6 : Math.max((day.rides / maxRides) * 100, 14);
 
-              <div className="chart-message">
-
-                No ride data available
-
+                  return (
+                    <div className="chart-day" key={day.day}>
+                      <span className="chart-value">{day.rides}</span>
+                      <div className="chart-bar-track">
+                        <div className="chart-bar" style={{ height: `${barHeight}%` }} />
+                      </div>
+                      <span className="chart-label">{day.label}</span>
+                    </div>
+                  );
+                })}
               </div>
-
-            </div>
+            ) : (
+              <div className="chart-placeholder">
+                <div className="chart-message">No ride data available</div>
+              </div>
+            )}
 
           </div>
 

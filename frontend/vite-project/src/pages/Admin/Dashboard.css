@@ -285,6 +285,53 @@
   justify-content: center;
 }
 
+.rides-chart {
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: end;
+  gap: 12px;
+}
+
+.chart-day {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.chart-value,
+.chart-label {
+  color: #666666;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.chart-label {
+  font-weight: 500;
+}
+
+.chart-bar-track {
+  width: 100%;
+  max-width: 42px;
+  height: 170px;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 8px;
+  background: #e3eee9;
+  overflow: hidden;
+}
+
+.chart-bar {
+  width: 100%;
+  min-height: 6px;
+  border-radius: 8px 8px 0 0;
+  background: #079b70;
+  transition: height 0.25s ease;
+}
+
 
 .chart-message {
   font-size: 13px;
@@ -429,6 +476,19 @@
     height: 190px;
 
     padding: 14px;
+  }
+
+  .rides-chart {
+    gap: 5px;
+  }
+
+  .chart-bar-track {
+    height: 120px;
+  }
+
+  .chart-value,
+  .chart-label {
+    font-size: 9px;
   }
 
 }

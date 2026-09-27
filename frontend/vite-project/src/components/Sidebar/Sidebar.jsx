@@ -4,8 +4,9 @@ import {
   Users,
   Car,
   Settings,
+  LogOut,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import "./Sidebar.css";
 
@@ -33,6 +34,14 @@ const menuItems = [
 ];
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   return (
     <>
       {/* Desktop Sidebar */}
@@ -86,8 +95,12 @@ const Sidebar = () => {
             <h4>Admin</h4>
             <p>Administrator</p>
           </div>
-
         </div>
+
+        <button className="sidebar-logout" onClick={handleLogout}>
+          <LogOut size={16} />
+          <span>Logout</span>
+        </button>
 
       </aside>
 

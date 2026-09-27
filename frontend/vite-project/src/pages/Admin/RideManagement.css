@@ -52,22 +52,15 @@
    EMPTY STATE
 ========================================= */
 
-.rides-empty-state {
+.rides-content {
   min-height: calc(100vh - 104px);
 
-  display: flex;
-
-  justify-content: center;
-
-  align-items: flex-start;
-
-  padding-top: 51px;
+  padding: 30px 34px 50px;
 
   background: #ffffff;
 }
 
-
-.rides-empty-state p {
+.rides-content > p {
   margin: 0;
 
   font-size: 13px;
@@ -75,6 +68,105 @@
   line-height: 18px;
 
   color: #666666;
+}
+
+.rides-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.ride-card {
+  padding: 18px;
+  border: 1px solid #e1e8e4;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(28, 73, 57, 0.06);
+}
+
+.ride-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ride-card-header strong {
+  display: block;
+  color: #202124;
+  font-size: 15px;
+}
+
+.ride-card-header small {
+  display: block;
+  margin-top: 4px;
+  color: #8a918e;
+  font-size: 11px;
+}
+
+.ride-status {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #e4f5ed;
+  color: #087b59;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.ride-status.cancelled {
+  background: #fde8e8;
+  color: #c33b3b;
+}
+
+.ride-status.requested {
+  background: #fff3d8;
+  color: #a66a00;
+}
+
+.ride-route {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0 16px;
+  padding-left: 12px;
+  border-left: 2px solid #9bd7c0;
+}
+
+.ride-route span,
+.ride-card-details span {
+  display: block;
+  margin-bottom: 3px;
+  color: #8a918e;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.ride-route strong {
+  display: block;
+  overflow: hidden;
+  color: #303633;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ride-card-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px 10px;
+  padding-top: 14px;
+  border-top: 1px solid #edf0ee;
+}
+
+.ride-card-details p {
+  margin: 0;
+  overflow: hidden;
+  color: #343a37;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 
@@ -108,12 +200,12 @@
   }
 
 
-  .rides-empty-state {
+  .rides-content {
     min-height: calc(100vh - 104px);
 
     background: #f8f9f8;
 
-    padding-top: 55px;
+    padding: 30px 34px 50px;
   }
 
 }
@@ -157,16 +249,16 @@
   }
 
 
-  .rides-empty-state {
+  .rides-content {
     min-height: calc(100vh - 168px);
 
-    padding-top: 50px;
+    padding: 24px 17px 80px;
 
     background: #ffffff;
   }
 
 
-  .rides-empty-state p {
+  .rides-content > p {
     font-size: 12px;
 
     color: #666666;
@@ -195,6 +287,15 @@
 
   .rides-header p {
     font-size: 11px;
+  }
+
+  .rides-list {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .ride-card {
+    padding: 16px;
   }
 
 }

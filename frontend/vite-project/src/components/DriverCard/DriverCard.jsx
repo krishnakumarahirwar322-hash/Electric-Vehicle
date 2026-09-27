@@ -114,7 +114,7 @@ import "./DriverCard.css";
 
 
 const DriverCard = ({ driver, onApprove }) => {
-  const isPending = !driver.status || driver.status.toLowerCase() === "pending";
+  const isPending = driver.status?.toLowerCase() === "pending";
   
   // Name ka pehla letter Avatar ke liye
   const avatarLetter = driver.name ? driver.name.charAt(0).toUpperCase() : "D";
@@ -141,8 +141,8 @@ const DriverCard = ({ driver, onApprove }) => {
       {/* Stats Section: Rating, Rides, Online Status */}
       <div className="driver-card-stats">
         <span>★ {driver.rating || "4.5"}</span>
-        <span>{driver.rides || 0} rides</span>
-        <span className="online-status">● Online</span>
+        <span>{driver.rides ?? 0} rides</span>
+        <span className="online-status">{driver.status === "approved" ? "Approved" : "Pending"}</span>
       </div>
 
       {/* Bottom Action: Approve Button */}

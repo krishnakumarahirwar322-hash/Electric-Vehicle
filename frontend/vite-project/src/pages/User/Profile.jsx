@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
     CreditCard,
@@ -13,16 +14,46 @@ import {
     UserCircle,
     LogOut
 } from "lucide-react";
+import api from "../../services/api";
 
 import "./Profile.css";
 
 
 const Profile = () => {
+    const navigate = useNavigate();
+    const [user, setUser] = useState({ name: "", email: "", phone: "" });
+    const [form, setForm] = useState({ name: "", email: "", phone: "" });
+    const [editing, setEditing] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
 
-    // Profile data
-    const user = {
-        name: "Demo Rider",
-        email: "user@voltride.com"
+    useEffect(() => {
+        api.get("/api/users/profile")
+            .then((response) => {
+                const profile = response.data.user;
+                setUser(profile);
+                setForm({ name: profile.name || "", email: profile.email || "", phone: profile.phone || "" });
+            })
+            .catch((requestError) => setError(requestError.response?.data?.message || "Profile could not be loaded."))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const handleChange = (event) => setForm((previous) => ({ ...previous, [event.target.name]: event.target.value }));
+
+    const handleSave = async (event) => {
+        event.preventDefault();
+        setSaving(true); setError(""); setMessage("");
+        try {
+            const response = await api.put("/api/users/profile", form);
+            const updated = response.data.user;
+            setUser(updated); setForm({ name: updated.name, email: updated.email, phone: updated.phone || "" });
+            localStorage.setItem("user", JSON.stringify(updated));
+            setEditing(false); setMessage("Profile updated successfully.");
+        } catch (requestError) {
+            setError(requestError.response?.data?.message || "Profile update failed.");
+        } finally { setSaving(false); }
     };
 
 
@@ -75,12 +106,9 @@ const Profile = () => {
 
 
     const handleSignOut = () => {
-
-        console.log("User signed out");
-
-        // Later:
-        // localStorage.removeItem("token");
-        // localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
 
     };
 
@@ -97,12 +125,12 @@ const Profile = () => {
             <section className="profile-header">
 
                 <div className="profile-avatar">
-                    D
+                    {(user.name || "U").charAt(0).toUpperCase()}
                 </div>
 
 
                 <h1>
-                    {user.name}
+                    {loading ? "Loading profile..." : user.name}
                 </h1>
 
 
@@ -119,6 +147,21 @@ const Profile = () => {
             ================================================= */}
 
             <main className="profile-content">
+
+                <section className="profile-edit-card">
+                    <div className="profile-edit-heading"><div><h2>Personal information</h2><p>Keep your account details up to date.</p></div><button type="button" onClick={() => { setEditing((value) => !value); setError(""); }}>{editing ? "Cancel" : "Edit"}</button></div>
+                    {editing ? (
+                        <form className="profile-edit-form" onSubmit={handleSave}>
+                            <label>Name<input name="name" value={form.name} onChange={handleChange} required /></label>
+                            <label>Email<input type="email" name="email" value={form.email} onChange={handleChange} required /></label>
+                            <label>Phone<input type="tel" name="phone" value={form.phone} onChange={handleChange} required /></label>
+                            <button className="profile-save-button" type="submit" disabled={saving}>{saving ? "Saving..." : "Save changes"}</button>
+                        </form>
+                    ) : (
+                        <div className="profile-details"><span>{user.email}</span><span>{user.phone || "No phone added"}</span></div>
+                    )}
+                    {error && <p className="profile-feedback error">{error}</p>}{message && <p className="profile-feedback success">{message}</p>}
+                </section>
 
                 <div className="profile-options">
 
