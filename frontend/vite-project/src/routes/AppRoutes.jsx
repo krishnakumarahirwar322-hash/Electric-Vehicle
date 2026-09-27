@@ -10,12 +10,7 @@ import {
 
  import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
-import ForgotPassword from "../pages/Auth/ForgotPassword";
-import ResetPassword from "../pages/Auth/ResetPassword";
 
-import Dashboard from "../pages/Admin/Dashboard";
-import DriverManagement from "../pages/Admin/DriverManagement";
-import RideManagement from "../pages/Admin/RideManagement";
 import Settings from "../pages/Admin/Settings";
 
 
@@ -29,7 +24,6 @@ import Earnings from "../pages/Driver/Earnings";
 import { Users } from "lucide-react";
 
 
-// Users
 
 import UserProfile from "../pages/User/Profile";
 import Home from "../pages/User/Home";
@@ -59,14 +53,14 @@ const AppRoutes = () => {
         />
 
         <Route
-          path="/register"
+          path="/signup"
           element={<Signup />}
         />
 
-        <Route
+        {/* <Route
           path="/forgot-password"
           element={<ForgotPassword />}
-        />
+        /> */}
 
         <Route
           path="/reset-password/:token"
@@ -90,12 +84,12 @@ const AppRoutes = () => {
             UNKNOWN
         ================================= */}
 
-        <Route
+         <Route
           path="*"
           element={
             <Navigate to="/login" />
           }
-        />
+        /> 
 
 
         {/* Admin */}
@@ -133,28 +127,28 @@ const AppRoutes = () => {
             DRIVER
         ========================= */}
 
-        <Route
+        {/* {/* <Route
           path="/driver/dashboard"
           element={<DriverDashboard />}
-        />
+        /> */}
 
       <Route path="/driver/profile" 
       element={<Profile />} />
 
-       <Route
+       {/* <Route
           path="/driver/earnings"
           element={<Earnings/>}
-        />
+        /> */} 
 
 
        {/* user */}
 
-      <Route path="/user/home" element={<UserLayout><Home /></UserLayout>} />
+       <Route path="/user/home" element={<UserLayout><Home /></UserLayout>} />
       
     <Route path="/user/profile" element={<UserLayout><UserProfile /></UserLayout>} />
 
     <Route path="/user/history" element={<UserLayout><History /></UserLayout>} />
-     
+      
      
       </Routes>
 
