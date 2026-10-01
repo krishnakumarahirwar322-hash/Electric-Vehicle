@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import "./Login.css";
@@ -213,9 +213,9 @@ const navigate = useNavigate();
             Don't have an account?
           </span>
 
-          <a href="/register">
+          <Link to="/signup">
             Register
-          </a>
+          </Link>
 
         </div>
 
