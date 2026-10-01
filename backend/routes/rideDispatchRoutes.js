@@ -7,34 +7,24 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 const router = express.Router();
 
 const readUserActiveRide = (userId, res) => {
-    db.query(
-        "UPDATE rides SET status = 'accepted', otp = NULL, otp_expires_at = NULL WHERE user_id = ? AND status = 'arrived' AND otp_expires_at <= NOW()",
-        [userId],
-        (expireError) => {
-            if (expireError) {
-                return res.status(500).json({ success: false, message: "Could not refresh active ride" });
-            }
-
-            const sql = `
-                SELECT r.id, r.user_id, r.driver_id, r.vehicle_id, r.pickup, r.destination,
-                    r.distance, r.fare, r.status, r.payment_method, r.pickup_lat AS user_lat,
-                    r.pickup_lng AS user_lng, r.destination_lat, r.destination_lng,
-                    r.driver_lat, r.driver_lng, r.otp AS otp_code, r.otp_expires_at,
-                    driver_user.name AS driver_name, driver_user.phone AS driver_phone,
-                    v.model, v.vehicle_number, v.vehicle_type
-                FROM rides r
-                LEFT JOIN drivers d ON d.id = r.driver_id
-                LEFT JOIN users driver_user ON driver_user.id = d.user_id
-                LEFT JOIN vehicles v ON v.id = r.vehicle_id
-                WHERE r.user_id = ? AND r.status IN ('requested', 'accepted', 'arrived', 'started')
-                ORDER BY r.id DESC LIMIT 1
-            `;
-            db.query(sql, [userId], (err, rides) => {
-                if (err) return res.status(500).json({ success: false, message: "Could not load active ride" });
-                return res.json({ success: true, ride: rides[0] || null });
-            });
-        }
-    );
+    const sql = `
+        SELECT r.id, r.user_id, r.driver_id, r.vehicle_id, r.pickup, r.destination,
+            r.distance, r.fare, r.status, r.payment_method, r.pickup_lat AS user_lat,
+            r.pickup_lng AS user_lng, r.destination_lat, r.destination_lng,
+            r.driver_lat, r.driver_lng, r.otp AS otp_code, r.otp_expires_at,
+            driver_user.name AS driver_name, driver_user.phone AS driver_phone,
+            v.model, v.vehicle_number, v.vehicle_type
+        FROM rides r
+        LEFT JOIN drivers d ON d.id = r.driver_id
+        LEFT JOIN users driver_user ON driver_user.id = d.user_id
+        LEFT JOIN vehicles v ON v.id = r.vehicle_id
+        WHERE r.user_id = ? AND r.status IN ('requested', 'accepted', 'arrived', 'started')
+        ORDER BY r.id DESC LIMIT 1
+    `;
+    db.query(sql, [userId], (err, rides) => {
+        if (err) return res.status(500).json({ success: false, message: "Could not load active ride" });
+        return res.json({ success: true, ride: rides[0] || null });
+    });
 };
 
 const verifyRideOtp = (req, res) => {
@@ -49,7 +39,7 @@ const verifyRideOtp = (req, res) => {
         JOIN drivers d ON d.id = r.driver_id
         SET r.status = 'started', r.otp = NULL, r.otp_expires_at = NULL
         WHERE r.id = ? AND d.user_id = ? AND r.status = 'arrived'
-            AND r.otp = ? AND r.otp_expires_at > NOW()
+            AND r.otp = ?
     `;
     db.query(sql, [rideId, req.user.id, otp], (err, result) => {
         if (err) return res.status(500).json({ success: false, message: "Could not verify OTP" });
@@ -123,31 +113,24 @@ router.get("/driver/requests", authMiddleware, roleMiddleware("driver"), (req, r
 });
 
 router.get("/driver/active", authMiddleware, roleMiddleware("driver"), (req, res) => {
-    const expireSql = `
-        UPDATE rides r JOIN drivers d ON d.id = r.driver_id
-        SET r.status = 'accepted', r.otp = NULL, r.otp_expires_at = NULL
-        WHERE d.user_id = ? AND r.status = 'arrived' AND r.otp_expires_at <= NOW()
+    const sql = `
+        SELECT r.id, r.user_id, r.driver_id, r.vehicle_id, r.pickup, r.destination,
+            r.distance, r.fare, r.status, r.pickup_lat AS user_lat, r.pickup_lng AS user_lng,
+            r.destination_lat, r.destination_lng, r.driver_lat, r.driver_lng,
+            r.otp_expires_at, r.cancel_reason, u.name AS user_name, u.phone AS user_phone
+        FROM rides r JOIN drivers d ON d.id = r.driver_id
+        JOIN users u ON u.id = r.user_id
+        WHERE d.user_id = ? AND r.status IN ('accepted', 'arrived', 'started', 'cancelled')
+        ORDER BY r.id DESC LIMIT 1
     `;
-    db.query(expireSql, [req.user.id], (expireError) => {
-        if (expireError) return res.status(500).json({ success: false, message: "Could not refresh active ride" });
-        const sql = `
-            SELECT r.id, r.user_id, r.driver_id, r.vehicle_id, r.pickup, r.destination,
-                r.distance, r.fare, r.status, r.pickup_lat AS user_lat, r.pickup_lng AS user_lng,
-                r.destination_lat, r.destination_lng, r.driver_lat, r.driver_lng, r.otp_expires_at,
-                u.name AS user_name, u.phone AS user_phone
-            FROM rides r JOIN drivers d ON d.id = r.driver_id
-            JOIN users u ON u.id = r.user_id
-            WHERE d.user_id = ? AND r.status IN ('accepted', 'arrived', 'started')
-            ORDER BY r.id DESC LIMIT 1
-        `;
-        db.query(sql, [req.user.id], (err, rides) => {
-            if (err) return res.status(500).json({ success: false, message: "Could not load active ride" });
-            return res.json({ success: true, ride: rides[0] || null });
-        });
+    db.query(sql, [req.user.id], (err, rides) => {
+        if (err) return res.status(500).json({ success: false, message: "Could not load active ride" });
+        return res.json({ success: true, ride: rides[0] || null });
     });
 });
 
 router.put("/:rideId/accept", authMiddleware, roleMiddleware("driver"), (req, res) => {
+    const otp = String(crypto.randomInt(0, 1000000)).padStart(6, "0");
     const driverSql = `
         SELECT d.id AS driver_id,
             (SELECT v.id FROM vehicles v WHERE v.driver_id = d.id ORDER BY v.id LIMIT 1) AS vehicle_id
@@ -159,8 +142,8 @@ router.put("/:rideId/accept", authMiddleware, roleMiddleware("driver"), (req, re
         if (driverError) return res.status(500).json({ success: false, message: "Could not verify driver status" });
         if (!drivers.length) return res.status(403).json({ success: false, message: "An approved online driver is required to accept rides" });
         const { driver_id: driverId, vehicle_id: vehicleId } = drivers[0];
-        const sql = "UPDATE rides SET driver_id = ?, vehicle_id = ?, status = 'accepted' WHERE id = ? AND status = 'requested' AND driver_id IS NULL";
-        db.query(sql, [driverId, vehicleId, req.params.rideId], (err, result) => {
+        const sql = "UPDATE rides SET driver_id = ?, vehicle_id = ?, status = 'accepted', otp = ?, otp_expires_at = NULL WHERE id = ? AND status = 'requested' AND driver_id IS NULL";
+        db.query(sql, [driverId, vehicleId, otp, req.params.rideId], (err, result) => {
             if (err) return res.status(500).json({ success: false, message: "Could not accept ride" });
             if (!result.affectedRows) return res.status(409).json({ success: false, message: "Ride was already accepted or is no longer available" });
             db.query("DELETE FROM ride_driver_rejections WHERE ride_id = ?", [req.params.rideId]);
@@ -186,16 +169,16 @@ router.post("/:rideId/reject", authMiddleware, roleMiddleware("driver"), (req, r
 });
 
 router.post("/:rideId/arrived", authMiddleware, roleMiddleware("driver"), (req, res) => {
-    const otp = String(crypto.randomInt(0, 1000000)).padStart(6, "0");
+    const fallbackOtp = String(crypto.randomInt(0, 1000000)).padStart(6, "0");
     const sql = `
         UPDATE rides r JOIN drivers d ON d.id = r.driver_id
-        SET r.status = 'arrived', r.otp = ?, r.otp_expires_at = DATE_ADD(NOW(), INTERVAL 3 MINUTE)
+        SET r.status = 'arrived', r.otp = COALESCE(r.otp, ?), r.otp_expires_at = NULL
         WHERE r.id = ? AND d.user_id = ? AND r.status = 'accepted'
     `;
-    db.query(sql, [otp, req.params.rideId, req.user.id], (err, result) => {
+    db.query(sql, [fallbackOtp, req.params.rideId, req.user.id], (err, result) => {
         if (err) return res.status(500).json({ success: false, message: "Could not update arrival status" });
         if (!result.affectedRows) return res.status(409).json({ success: false, message: "Ride is not assigned to you or is no longer accepted" });
-        return res.json({ success: true, message: "Arrival recorded; passenger OTP expires in 3 minutes" });
+        return res.json({ success: true, message: "Arrival recorded" });
     });
 });
 

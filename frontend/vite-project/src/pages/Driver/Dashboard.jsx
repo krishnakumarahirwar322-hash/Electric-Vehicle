@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 
 import api from "../../services/api";
@@ -37,9 +37,12 @@ const Dashboard = () => {
   const [error, setError] = useState("");
   const [requests, setRequests] = useState([]);
   const [activeRide, setActiveRide] = useState(null);
+  const [rideNotice, setRideNotice] = useState("");
   const [isOnline, setIsOnline] = useState(false);
   const [otp, setOtp] = useState("");
-  const [otpSecondsLeft, setOtpSecondsLeft] = useState(null);
+  const [rideActionLoading, setRideActionLoading] = useState(false);
+  const [rideActionError, setRideActionError] = useState("");
+  const lastCancellationNoticeRef = useRef(null);
   const driverLocationWatch = useRef(null);
   const mapElement = useRef(null);
   const mapRef = useRef(null);
@@ -133,32 +136,25 @@ const Dashboard = () => {
           api.get("/api/rides/driver/active")
         ]);
         setRequests(requestResponse.data?.requests || []);
-        setActiveRide(activeResponse.data?.ride || null);
+        const ride = activeResponse.data?.ride || null;
+        if (ride?.status === "cancelled") {
+          if (lastCancellationNoticeRef.current !== ride.id) {
+            lastCancellationNoticeRef.current = ride.id;
+            setRideNotice(`User cancelled ride #${ride.id}${ride.cancel_reason ? `: ${ride.cancel_reason}` : "."}`);
+          }
+          setActiveRide(null);
+          return;
+        }
+        setRideNotice("");
+        setActiveRide(ride);
       } catch (requestError) {
         console.error("Ride request refresh failed:", requestError.response?.data || requestError.message);
       }
     };
     refreshRideData();
-    const timer = setInterval(refreshRideData, 5000);
+    const timer = setInterval(refreshRideData, 1000);
     return () => clearInterval(timer);
   }, [driver]);
-
-  useEffect(() => {
-    if (activeRide?.status !== "arrived" || !activeRide.otp_expires_at) {
-      setOtpSecondsLeft(null);
-      return undefined;
-    }
-
-    const updateCountdown = () => {
-      const seconds = Math.max(0, Math.ceil((new Date(activeRide.otp_expires_at).getTime() - Date.now()) / 1000));
-      setOtpSecondsLeft(seconds);
-      if (seconds === 0) setActiveRide(null);
-    };
-
-    updateCountdown();
-    const timer = setInterval(updateCountdown, 1000);
-    return () => clearInterval(timer);
-  }, [activeRide]);
 
   useEffect(() => {
     if (!activeRide || !navigator.geolocation) return undefined;
@@ -270,8 +266,16 @@ const Dashboard = () => {
   };
 
   const acceptRide = async (rideId) => {
-    await api.put(`/api/rides/${rideId}/accept`);
-    setRequests((items) => items.filter((item) => item.id !== rideId));
+    setRideActionLoading(true);
+    setRideActionError("");
+    try {
+      await api.put(`/api/rides/${rideId}/accept`);
+      setRequests((items) => items.filter((item) => item.id !== rideId));
+    } catch (actionError) {
+      setRideActionError(actionError.response?.data?.message || "Could not accept this ride. Please retry.");
+    } finally {
+      setRideActionLoading(false);
+    }
   };
 
   const rejectRide = async (rideId) => {
@@ -284,19 +288,47 @@ const Dashboard = () => {
   };
 
   const markArrived = async () => {
-    await api.post(`/api/rides/${activeRide.id}/arrived`);
-    setActiveRide((ride) => ({ ...ride, status: "arrived" }));
+    setRideActionLoading(true);
+    setRideActionError("");
+    try {
+      const response = await api.post(`/api/rides/${activeRide.id}/arrived`);
+      setActiveRide((ride) => ({ ...ride, status: "arrived", otp_expires_at: response.data.otp_expires_at }));
+    } catch (actionError) {
+      setRideActionError(actionError.response?.data?.message || "Could not update arrival. Please retry.");
+    } finally {
+      setRideActionLoading(false);
+    }
   };
 
   const verifyOtp = async () => {
-    await api.post(`/api/rides/${activeRide.id}/verify-otp`, { otp });
-    setActiveRide((ride) => ({ ...ride, status: "started" }));
-    setOtp("");
+    if (!/^\d{6}$/.test(otp)) {
+      setRideActionError("Enter the passenger's 6-digit OTP.");
+      return;
+    }
+    setRideActionLoading(true);
+    setRideActionError("");
+    try {
+      await api.post(`/api/rides/${activeRide.id}/verify-otp`, { otp });
+      setActiveRide((ride) => ({ ...ride, status: "started", otp_expires_at: null }));
+      setOtp("");
+    } catch (actionError) {
+      setRideActionError(actionError.response?.data?.message || "Trip could not start. Check the OTP and retry.");
+    } finally {
+      setRideActionLoading(false);
+    }
   };
 
   const completeRide = async () => {
-    await api.put(`/api/rides/${activeRide.id}/complete`);
-    setActiveRide(null);
+    setRideActionLoading(true);
+    setRideActionError("");
+    try {
+      await api.put(`/api/rides/${activeRide.id}/complete`);
+      setActiveRide(null);
+    } catch (actionError) {
+      setRideActionError(actionError.response?.data?.message || "Ride could not be completed. Please retry.");
+    } finally {
+      setRideActionLoading(false);
+    }
   };
 
   // =================================================
@@ -565,8 +597,8 @@ const Dashboard = () => {
                 <div className="driver-request" key={ride.id}>
                   <div><strong>{ride.pickup}</strong><span>to {ride.destination}</span></div>
                   <div className="request-actions">
-                    <button onClick={() => acceptRide(ride.id)}>Accept</button>
-                    <button className="reject-request-button" onClick={() => rejectRide(ride.id)}>Reject</button>
+                    <button onClick={() => acceptRide(ride.id)} disabled={rideActionLoading}>{rideActionLoading ? "Working..." : "Accept"}</button>
+                    <button className="reject-request-button" onClick={() => rejectRide(ride.id)} disabled={rideActionLoading}>Reject</button>
                   </div>
                 </div>
               ))}
@@ -578,11 +610,14 @@ const Dashboard = () => {
               <h2>Active ride</h2>
               <p>{activeRide.pickup} to {activeRide.destination}</p>
               <strong>Status: {activeRide.status}</strong>
-              {activeRide.status === "accepted" && <button onClick={markArrived}>I have arrived</button>}
-              {activeRide.status === "arrived" && <><p className="otp-countdown">OTP expires in {Math.floor(otpSecondsLeft / 60)}:{String(otpSecondsLeft % 60).padStart(2, "0")}</p><div className="otp-entry"><input value={otp} onChange={(event) => setOtp(event.target.value)} placeholder="Enter user OTP" maxLength="6" /><button onClick={verifyOtp}>Start trip</button></div></>}
-              {activeRide.status === "started" && <button onClick={completeRide}>Complete ride</button>}
+              {activeRide.status === "accepted" && <button onClick={markArrived} disabled={rideActionLoading}>{rideActionLoading ? "Updating..." : "I have arrived"}</button>}
+              {activeRide.status === "arrived" && <div className="otp-entry"><input value={otp} onChange={(event) => { setOtp(event.target.value.replace(/\D/g, "").slice(0, 6)); setRideActionError(""); }} placeholder="Enter user OTP" inputMode="numeric" autoComplete="one-time-code" maxLength="6" disabled={rideActionLoading} /><button onClick={verifyOtp} disabled={rideActionLoading || !/^\d{6}$/.test(otp)}>{rideActionLoading ? "Starting..." : "Start trip"}</button></div>}
+              {activeRide.status === "started" && <button onClick={completeRide} disabled={rideActionLoading}>{rideActionLoading ? "Completing..." : "Complete ride"}</button>}
+              {rideActionError && <p className="ride-action-error" role="alert">{rideActionError}</p>}
             </div>
           )}
+
+          {rideNotice && <div className="ride-cancelled-notice" role="status">{rideNotice}</div>}
 
           <div className="looking-rides-card">
 

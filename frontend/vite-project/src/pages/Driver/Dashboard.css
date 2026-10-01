@@ -1149,6 +1149,23 @@
   font-size: 12px;
 }
 
+.active-ride-card .ride-action-error {
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ride-cancelled-notice {
+  margin: 12px 0;
+  padding: 11px 13px;
+  border: 1px solid #f0c7c4;
+  border-radius: 8px;
+  background: #fff6f5;
+  color: #a52820;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .driver-request button,
 .active-ride-card button {
   border: 0;
@@ -1191,4 +1208,9 @@
   color: #b23a3a;
   font-size: 12px;
   font-weight: 700;
+}
+
+.active-ride-card button:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }

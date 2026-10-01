@@ -85,7 +85,7 @@ const Home = () => {
       }
     };
     refreshActiveRide();
-    const timer = setInterval(refreshActiveRide, 5000);
+    const timer = setInterval(refreshActiveRide, 1000);
     return () => { clearInterval(timer); clearTimeout(locationTimer); map.remove(); };
   }, [requestCurrentLocation]);
 
@@ -250,7 +250,7 @@ const Home = () => {
           <strong>{activeRide.status === "requested" ? "Ride request sent" : activeRide.status === "started" ? "Driver is taking you to destination" : "Tracking your driver"}</strong>
           {activeRide.driver_name && activeRide.status !== "requested" && <span>Driver: {activeRide.driver_name}</span>}
           {activeRide.status === "requested" && <span>Waiting for an online driver to accept your request.</span>}
-          {activeRide.status === "accepted" && <span>Driver is coming to your pickup location.</span>}
+          {activeRide.status === "accepted" && <span>Driver is coming to your pickup location. Your OTP: <b>{activeRide.otp_code || "Generating..."}</b></span>}
           {activeRide.status === "arrived" && <span>Driver arrived. Share OTP: <b>{activeRide.otp_code || "Check your ride details"}</b></span>}
           {activeRide.status === "started" && <span>Trip started after OTP verification. Destination route is live.</span>}
           {["requested", "accepted", "arrived"].includes(activeRide.status) && <div className="cancel-ride-box">
