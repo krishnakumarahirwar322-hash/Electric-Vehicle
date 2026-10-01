@@ -29,10 +29,6 @@ const navigate = useNavigate();
   try {
     const response = await loginUser(formData);
 
-    console.log("LOGIN RESPONSE:", response.data);
-    console.log("USER:", response.data?.user);
-    console.log("ROLE:", response.data?.user?.role);
-
     if (response.data?.success) {
       const user = response.data.user;
       const role = user?.role?.toLowerCase();
@@ -43,20 +39,15 @@ const navigate = useNavigate();
       // User information save
       localStorage.setItem("user", JSON.stringify(user));
 
-      console.log("ROLE:", role);
-
       // Role ke according redirect
       if (role === "admin") {
-        console.log("Redirecting to ADMIN");
-        navigate("/admin/dashboard");
+        navigate("/admin/dashboard", { replace: true });
       } 
       else if (role === "user") {
-        console.log("Redirecting to USER");
-        navigate("/user/home");
+        navigate("/user/home", { replace: true });
       } 
       else if (role === "driver") {
-        console.log("Redirecting to DRIVER");
-        navigate("/driver/dashboard");
+        navigate("/driver/dashboard", { replace: true });
       } 
       else {
         alert("Invalid role: " + role);
@@ -134,6 +125,7 @@ const navigate = useNavigate();
               id="login-email"
               type="email"
               name="email"
+              autoComplete="username"
               placeholder="Enter your email"
               value={formData.email}
               onChange={handleChange}
@@ -161,6 +153,7 @@ const navigate = useNavigate();
                     : "password"
                 }
                 name="password"
+                autoComplete="current-password"
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
