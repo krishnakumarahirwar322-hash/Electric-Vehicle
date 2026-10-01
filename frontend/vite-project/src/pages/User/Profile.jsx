@@ -15,7 +15,7 @@ import {
     LogOut
 } from "lucide-react";
 import api from "../../services/api";
-import { clearAuthSession } from "../../services/authSession";
+import { clearAuthSession, saveAuthUser } from "../../services/authSession";
 
 import "./Profile.css";
 
@@ -50,7 +50,7 @@ const Profile = () => {
             const response = await api.put("/api/users/profile", form);
             const updated = response.data.user;
             setUser(updated); setForm({ name: updated.name, email: updated.email, phone: updated.phone || "" });
-            localStorage.setItem("user", JSON.stringify(updated));
+            saveAuthUser(updated);
             setEditing(false); setMessage("Profile updated successfully.");
         } catch (requestError) {
             setError(requestError.response?.data?.message || "Profile update failed.");

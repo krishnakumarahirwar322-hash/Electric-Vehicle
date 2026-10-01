@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import "./Login.css";
 import { loginUser } from "../../services/authApi.js";
-import { saveAuthToken } from "../../services/authSession";
+import { saveAuthToken, saveAuthUser } from "../../services/authSession";
 
 const Login = () => {
 const navigate = useNavigate();
@@ -37,7 +37,7 @@ const navigate = useNavigate();
       saveAuthToken(response.data.token);
 
       // User information save
-      localStorage.setItem("user", JSON.stringify(user));
+      saveAuthUser(user);
 
       // Role ke according redirect
       if (role === "admin") {

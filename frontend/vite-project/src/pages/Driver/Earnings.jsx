@@ -301,7 +301,7 @@
 // export default Earnings;
 
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Car,
   Wallet,
@@ -311,6 +311,7 @@ import {
 
 import "./Dashboard.css";
 import "./Earnings.css";
+import api from "../../services/api";
 
 const Earnings = () => {
   const [earnings, setEarnings] = useState({
@@ -326,24 +327,16 @@ const Earnings = () => {
   useEffect(() => {
     const fetchEarningsData = async () => {
       try {
-        // Backend Port 5000 maan kar chal rahe hain (apne backend port ke acc. badal sakte hain)
-        const response = await fetch('http://localhost:5000/api/drivers/earnings', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+        const response = await api.get("/api/drivers/earnings");
+        const data = response.data;
+        setEarnings({
+          totalEarned: Number(data.totalEarned || 0),
+          wallet: Number(data.wallet || 0),
+          today: Number(data.today || 0),
+          week: Number(data.week || 0),
+          month: Number(data.month || 0),
         });
-        const data = await response.json();
-        
-        if (response.ok) {
-          setEarnings({
-            totalEarned: data.totalEarned,
-            wallet: data.wallet,
-            today: data.today,
-            week: data.week,
-            month: data.month,
-          });
-          setRecentRides(data.recentRides || []);
-        }
+        setRecentRides(data.recentRides || []);
       } catch (error) {
         console.error("Error fetching earnings:", error);
       } finally {

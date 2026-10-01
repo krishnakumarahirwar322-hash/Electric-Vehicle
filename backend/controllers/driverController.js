@@ -243,58 +243,66 @@ const getDashboardStats = (req, res) => {
 
 // ================= 7. GET DRIVER EARNINGS (NEWLY ADDED) =================
 const getDriverEarnings = (req, res) => {
-    // Auth Middleware se Logged-in User ID milegi (fallback testing ID: 7)
-    const userId = req.user?.id || 7;
+    db.query("SELECT id FROM drivers WHERE user_id = ? AND status = 'approved' LIMIT 1", [req.user.id], (driverError, drivers) => {
+        if (driverError) {
+            console.error("Driver earnings lookup failed:", driverError.message);
+            return res.status(500).json({ success: false, message: "Failed to load driver earnings" });
+        }
+        if (!drivers.length) {
+            return res.status(403).json({ success: false, message: "An approved driver account is required to view earnings" });
+        }
 
-    const driverQuery = `SELECT id FROM drivers WHERE user_id = ?`;
-
-    db.query(driverQuery, [userId], (err, driverResults) => {
-        // Agar user_id se direct record na mile, toh id ko direct driver_id maan kar test kar lein
-        const driverId = (driverResults && driverResults.length > 0) ? driverResults[0].id : userId;
-
-        // 1. Total Earnings Query
-        const earningsQuery = `
-            SELECT COALESCE(SUM(fare), 0) AS totalEarned
-            FROM rides 
-            WHERE driver_id = ? AND LOWER(status) = 'completed'
+        const driverId = drivers[0].id;
+        const paidRideJoin = `
+            FROM rides r
+            JOIN (
+                SELECT ride_id, MAX(id) AS payment_id
+                FROM payments
+                WHERE payment_status = 'paid'
+                GROUP BY ride_id
+            ) latest ON latest.ride_id = r.id
+            JOIN payments p ON p.id = latest.payment_id
+            WHERE r.driver_id = ? AND r.status = 'completed'
+        `;
+        const driverShare = "COALESCE(p.driver_settlement, p.amount * 0.2)";
+        const summarySql = `
+            SELECT
+                COALESCE(SUM(${driverShare}), 0) AS totalEarned,
+                COALESCE(SUM(CASE WHEN DATE(r.created_at) = CURDATE() THEN ${driverShare} ELSE 0 END), 0) AS today,
+                COALESCE(SUM(CASE WHEN r.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN ${driverShare} ELSE 0 END), 0) AS week,
+                COALESCE(SUM(CASE WHEN YEAR(r.created_at) = YEAR(CURDATE()) AND MONTH(r.created_at) = MONTH(CURDATE()) THEN ${driverShare} ELSE 0 END), 0) AS month
+            ${paidRideJoin}
         `;
 
-        db.query(earningsQuery, [driverId], (err, earningsResults) => {
-            if (err) {
-                console.error("Earnings Query Error:", err);
-                return res.status(500).json({ success: false, message: "Failed to fetch earnings" });
+        db.query(summarySql, [driverId], (summaryError, summaries) => {
+            if (summaryError) {
+                console.error("Driver earnings summary failed:", summaryError.message);
+                return res.status(500).json({ success: false, message: "Failed to calculate paid earnings" });
             }
 
-            // 2. Recent Rides Query
-            const ridesQuery = `
-                SELECT id, pickup, destination, fare, status 
-                FROM rides 
-                WHERE driver_id = ? AND LOWER(status) = 'completed'
-                ORDER BY id DESC 
+            const recentSql = `
+                SELECT r.id, r.pickup, r.destination, r.status,
+                    p.amount AS gross_fare, ${driverShare} AS fare, p.payment_method
+                ${paidRideJoin}
+                ORDER BY r.id DESC
                 LIMIT 5
             `;
-
-            db.query(ridesQuery, [driverId], (err, rideResults) => {
-                if (err) {
-                    console.error("Recent Rides Error:", err);
-                    return res.status(500).json({ success: false, message: "Failed to fetch recent rides" });
+            db.query(recentSql, [driverId], (ridesError, rides) => {
+                if (ridesError) {
+                    console.error("Recent paid driver rides failed:", ridesError.message);
+                    return res.status(500).json({ success: false, message: "Failed to load recent paid rides" });
                 }
 
-                // 3. Wallet Query
-                const walletQuery = `SELECT wallet_balance FROM drivers WHERE id = ?`;
-                db.query(walletQuery, [driverId], (err, walletResults) => {
-                    const total = earningsResults[0]?.totalEarned || 0;
-                    const wallet = walletResults && walletResults.length > 0 ? walletResults[0].wallet_balance : 0;
-
-                    res.status(200).json({
-                        success: true,
-                        totalEarned: Number(total),
-                        wallet: Number(wallet),
-                        today: Number(total),
-                        week: Number(total),
-                        month: Number(total),
-                        recentRides: rideResults || []
-                    });
+                const earnings = summaries[0] || {};
+                const total = Number(earnings.totalEarned || 0);
+                return res.json({
+                    success: true,
+                    totalEarned: total,
+                    wallet: total,
+                    today: Number(earnings.today || 0),
+                    week: Number(earnings.week || 0),
+                    month: Number(earnings.month || 0),
+                    recentRides: rides || []
                 });
             });
         });
