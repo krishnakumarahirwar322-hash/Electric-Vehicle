@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Car, CircleDot, Clock3, CreditCard, LocateFixed, Navigation, Search, Smartphone, Square, UserCircle, WalletCards } from "lucide-react";
 import L from "leaflet";
 import api from "../../services/api";
+import { getAuthUser } from "../../services/authSession";
 import "./Home.css";
 
 const DEFAULT_LOCATION = { lat: 28.6139, lon: 77.209 };
@@ -29,6 +30,7 @@ const Home = () => {
   const [fare, setFare] = useState(0);
   const [locationStatus, setLocationStatus] = useState("Choose current location or enter pickup manually");
   const [message, setMessage] = useState("");
+  const [userName, setUserName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeRide, setActiveRide] = useState(null);
@@ -37,6 +39,11 @@ const Home = () => {
   const [cancelling, setCancelling] = useState(false);
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const sheetDragRef = useRef({ startY: 0, dragging: false, moved: false });
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setUserName(getAuthUser()?.name || ""), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const initialTimer = window.setTimeout(() => setClockNow(Date.now()), 0);
@@ -245,7 +252,7 @@ const Home = () => {
   return (
     <div className="user-home">
       <div className="map-area" ref={mapElement} onClick={() => setSheetExpanded(false)}>
-        <div className="greeting-card"><strong>Hi there!</strong><span>Book your electric ride</span></div>
+        <div className="greeting-card"><strong>{userName ? `Hi, ${userName}` : "Hi there!"}</strong><span>Book your electric ride</span></div>
         <button className="map-location-button" onClick={(event) => { event.stopPropagation(); requestCurrentLocation(); }} title="Use current location"><LocateFixed size={18} /></button>
       </div>
       <div className={`booking-panel ${sheetExpanded ? "sheet-expanded" : "sheet-collapsed"} ${!showBookingForm ? "active-ride-panel" : ""}`}>
