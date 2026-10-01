@@ -45,7 +45,7 @@ const History = () => {
     <div className="history-page">
       <header className="history-header">
         <h1>My Rides</h1>
-        <p>{rides.length} total trips</p>
+        <p>{loadError ? "History unavailable" : `${rides.length} total trips`}</p>
       </header>
       <main className="history-content">
         {loading ? (

@@ -7,6 +7,22 @@ const db = require("../config/db");
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
 
+const requireUserAccount = (req, res, next) => {
+    db.query("SELECT role FROM users WHERE id = ? LIMIT 1", [req.user.id], (err, users) => {
+        if (err) {
+            console.error("User role lookup failed:", err.message);
+            return res.status(500).json({ success: false, message: "Could not verify account access" });
+        }
+        if (!users.length) {
+            return res.status(401).json({ success: false, message: "User account not found; please sign in again" });
+        }
+        if (String(users[0].role).toLowerCase() !== "user") {
+            return res.status(403).json({ success: false, message: "Ride history is available to user accounts only" });
+        }
+        return next();
+    });
+};
+
 
 // ==================================================
 // CREATE RIDE
@@ -114,7 +130,7 @@ router.post(
 router.get(
     "/my-rides",
     authMiddleware,
-    roleMiddleware("user"),
+    requireUserAccount,
     (req, res) => {
 
         const user_id = req.user.id;

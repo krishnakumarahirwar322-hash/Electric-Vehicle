@@ -175,10 +175,11 @@ exports.login = (req, res) => {
 
             }
 
+            const role = String(user.role || "").toLowerCase();
             const token = jwt.sign(
                 {
                     id: user.id,
-                    role: user.role
+                    role
                 },
                 process.env.JWT_SECRET,
                 {
@@ -195,7 +196,7 @@ exports.login = (req, res) => {
                     name: user.name,
                     email: user.email,
                     phone: user.phone,
-                    role: user.role
+                    role
                 }
             });
 
