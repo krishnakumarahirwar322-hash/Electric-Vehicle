@@ -42,6 +42,7 @@ const Dashboard = () => {
   const [otp, setOtp] = useState("");
   const [rideActionLoading, setRideActionLoading] = useState(false);
   const [rideActionError, setRideActionError] = useState("");
+  const [clockNow, setClockNow] = useState(null);
   const lastCancellationNoticeRef = useRef(null);
   const driverLocationWatch = useRef(null);
   const mapElement = useRef(null);
@@ -49,6 +50,15 @@ const Dashboard = () => {
   const rideMarkerRef = useRef(null);
   const driverMarkerRef = useRef(null);
   const activeRouteRef = useRef(null);
+
+  useEffect(() => {
+    const initialTimer = window.setTimeout(() => setClockNow(Date.now()), 0);
+    const timer = window.setInterval(() => setClockNow(Date.now()), 1000);
+    return () => {
+      window.clearTimeout(initialTimer);
+      window.clearInterval(timer);
+    };
+  }, []);
 
   // =================================================
   // GET DRIVER + DASHBOARD DATA
@@ -331,6 +341,10 @@ const Dashboard = () => {
     }
   };
 
+  const otpExpiresAt = activeRide?.otp_expires_at ? new Date(activeRide.otp_expires_at).getTime() : null;
+  const otpSecondsLeft = otpExpiresAt && clockNow !== null ? Math.max(0, Math.ceil((otpExpiresAt - clockNow) / 1000)) : null;
+  const otpExpired = activeRide?.status === "arrived" && (!otpExpiresAt || (otpSecondsLeft !== null && otpSecondsLeft === 0));
+
   // =================================================
   // MAIN UI
   // =================================================
@@ -610,8 +624,9 @@ const Dashboard = () => {
               <h2>Active ride</h2>
               <p>{activeRide.pickup} to {activeRide.destination}</p>
               <strong>Status: {activeRide.status}</strong>
+              {(activeRide.status === "accepted" || activeRide.status === "arrived") && otpSecondsLeft !== null && <p className="otp-countdown">{otpSecondsLeft > 0 ? `OTP expires in ${Math.floor(otpSecondsLeft / 60)}:${String(otpSecondsLeft % 60).padStart(2, "0")}` : "OTP expired"}</p>}
               {activeRide.status === "accepted" && <button onClick={markArrived} disabled={rideActionLoading}>{rideActionLoading ? "Updating..." : "I have arrived"}</button>}
-              {activeRide.status === "arrived" && <div className="otp-entry"><input value={otp} onChange={(event) => { setOtp(event.target.value.replace(/\D/g, "").slice(0, 6)); setRideActionError(""); }} placeholder="Enter user OTP" inputMode="numeric" autoComplete="one-time-code" maxLength="6" disabled={rideActionLoading} /><button onClick={verifyOtp} disabled={rideActionLoading || !/^\d{6}$/.test(otp)}>{rideActionLoading ? "Starting..." : "Start trip"}</button></div>}
+              {activeRide.status === "arrived" && <><div className="otp-entry"><input value={otp} onChange={(event) => { setOtp(event.target.value.replace(/\D/g, "").slice(0, 6)); setRideActionError(""); }} placeholder="Enter user OTP" inputMode="numeric" autoComplete="one-time-code" maxLength="6" disabled={rideActionLoading || otpExpired} /><button onClick={verifyOtp} disabled={rideActionLoading || otpExpired || !/^\d{6}$/.test(otp)}>{rideActionLoading ? "Starting..." : "Start trip"}</button></div>{otpExpired && <button onClick={markArrived} disabled={rideActionLoading}>{rideActionLoading ? "Renewing..." : "Generate new OTP"}</button>}</>}
               {activeRide.status === "started" && <button onClick={completeRide} disabled={rideActionLoading}>{rideActionLoading ? "Completing..." : "Complete ride"}</button>}
               {rideActionError && <p className="ride-action-error" role="alert">{rideActionError}</p>}
             </div>

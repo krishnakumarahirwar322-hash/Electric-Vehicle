@@ -39,7 +39,7 @@ const verifyRideOtp = (req, res) => {
         JOIN drivers d ON d.id = r.driver_id
         SET r.status = 'started', r.otp = NULL, r.otp_expires_at = NULL
         WHERE r.id = ? AND d.user_id = ? AND r.status = 'arrived'
-            AND r.otp = ?
+            AND r.otp = ? AND (r.otp_expires_at IS NULL OR r.otp_expires_at > NOW())
     `;
     db.query(sql, [rideId, req.user.id, otp], (err, result) => {
         if (err) return res.status(500).json({ success: false, message: "Could not verify OTP" });
@@ -142,7 +142,7 @@ router.put("/:rideId/accept", authMiddleware, roleMiddleware("driver"), (req, re
         if (driverError) return res.status(500).json({ success: false, message: "Could not verify driver status" });
         if (!drivers.length) return res.status(403).json({ success: false, message: "An approved online driver is required to accept rides" });
         const { driver_id: driverId, vehicle_id: vehicleId } = drivers[0];
-        const sql = "UPDATE rides SET driver_id = ?, vehicle_id = ?, status = 'accepted', otp = ?, otp_expires_at = NULL WHERE id = ? AND status = 'requested' AND driver_id IS NULL";
+        const sql = "UPDATE rides SET driver_id = ?, vehicle_id = ?, status = 'accepted', otp = ?, otp_expires_at = DATE_ADD(NOW(), INTERVAL 3 MINUTE) WHERE id = ? AND status = 'requested' AND driver_id IS NULL";
         db.query(sql, [driverId, vehicleId, otp, req.params.rideId], (err, result) => {
             if (err) return res.status(500).json({ success: false, message: "Could not accept ride" });
             if (!result.affectedRows) return res.status(409).json({ success: false, message: "Ride was already accepted or is no longer available" });
@@ -169,16 +169,19 @@ router.post("/:rideId/reject", authMiddleware, roleMiddleware("driver"), (req, r
 });
 
 router.post("/:rideId/arrived", authMiddleware, roleMiddleware("driver"), (req, res) => {
-    const fallbackOtp = String(crypto.randomInt(0, 1000000)).padStart(6, "0");
+    const renewedOtp = String(crypto.randomInt(0, 1000000)).padStart(6, "0");
     const sql = `
         UPDATE rides r JOIN drivers d ON d.id = r.driver_id
-        SET r.status = 'arrived', r.otp = COALESCE(r.otp, ?), r.otp_expires_at = NULL
-        WHERE r.id = ? AND d.user_id = ? AND r.status = 'accepted'
+        SET r.status = 'arrived', r.otp = ?, r.otp_expires_at = DATE_ADD(NOW(), INTERVAL 3 MINUTE)
+        WHERE r.id = ? AND d.user_id = ? AND r.status IN ('accepted', 'arrived')
     `;
-    db.query(sql, [fallbackOtp, req.params.rideId, req.user.id], (err, result) => {
+    db.query(sql, [renewedOtp, req.params.rideId, req.user.id], (err, result) => {
         if (err) return res.status(500).json({ success: false, message: "Could not update arrival status" });
         if (!result.affectedRows) return res.status(409).json({ success: false, message: "Ride is not assigned to you or is no longer accepted" });
-        return res.json({ success: true, message: "Arrival recorded" });
+        db.query("SELECT otp_expires_at FROM rides WHERE id = ?", [req.params.rideId], (expiryError, rows) => {
+            if (expiryError) return res.status(500).json({ success: false, message: "OTP created, but expiry could not be loaded" });
+            return res.json({ success: true, message: "Arrival recorded; OTP expires in 3 minutes", otp_expires_at: rows[0]?.otp_expires_at || null });
+        });
     });
 });
 

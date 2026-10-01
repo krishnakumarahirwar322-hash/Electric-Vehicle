@@ -32,10 +32,20 @@ const Home = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeRide, setActiveRide] = useState(null);
+  const [clockNow, setClockNow] = useState(null);
   const [cancelReason, setCancelReason] = useState("");
   const [cancelling, setCancelling] = useState(false);
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const sheetDragRef = useRef({ startY: 0, dragging: false, moved: false });
+
+  useEffect(() => {
+    const initialTimer = window.setTimeout(() => setClockNow(Date.now()), 0);
+    const timer = window.setInterval(() => setClockNow(Date.now()), 1000);
+    return () => {
+      window.clearTimeout(initialTimer);
+      window.clearInterval(timer);
+    };
+  }, []);
 
   const requestCurrentLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -228,6 +238,9 @@ const Home = () => {
   };
 
   const showBookingForm = !activeRide || activeRide.status === "requested";
+  const otpExpiresAt = activeRide?.otp_expires_at ? new Date(activeRide.otp_expires_at).getTime() : null;
+  const otpSecondsLeft = otpExpiresAt && clockNow !== null ? Math.max(0, Math.ceil((otpExpiresAt - clockNow) / 1000)) : null;
+  const otpExpired = otpSecondsLeft === 0;
 
   return (
     <div className="user-home">
@@ -250,8 +263,8 @@ const Home = () => {
           <strong>{activeRide.status === "requested" ? "Ride request sent" : activeRide.status === "started" ? "Driver is taking you to destination" : "Tracking your driver"}</strong>
           {activeRide.driver_name && activeRide.status !== "requested" && <span>Driver: {activeRide.driver_name}</span>}
           {activeRide.status === "requested" && <span>Waiting for an online driver to accept your request.</span>}
-          {activeRide.status === "accepted" && <span>Driver is coming to your pickup location. Your OTP: <b>{activeRide.otp_code || "Generating..."}</b></span>}
-          {activeRide.status === "arrived" && <span>Driver arrived. Share OTP: <b>{activeRide.otp_code || "Check your ride details"}</b></span>}
+          {activeRide.status === "accepted" && <span>Driver is coming to your pickup location. Your OTP: <b>{otpExpired ? "Expired" : activeRide.otp_code || "Generating..."}</b>{otpSecondsLeft !== null && !otpExpired && ` (expires in ${Math.floor(otpSecondsLeft / 60)}:${String(otpSecondsLeft % 60).padStart(2, "0")})`}</span>}
+          {activeRide.status === "arrived" && <span>Driver arrived. {otpExpired ? "Ask the driver to renew the OTP." : <>Share OTP: <b>{activeRide.otp_code || "Check your ride details"}</b></>}{otpSecondsLeft !== null && !otpExpired && ` (expires in ${Math.floor(otpSecondsLeft / 60)}:${String(otpSecondsLeft % 60).padStart(2, "0")})`}</span>}
           {activeRide.status === "started" && <span>Trip started after OTP verification. Destination route is live.</span>}
           {["requested", "accepted", "arrived"].includes(activeRide.status) && <div className="cancel-ride-box">
             <div className="cancel-ride-heading"><strong>Need to cancel?</strong><span>You can cancel before the trip starts.</span></div>
