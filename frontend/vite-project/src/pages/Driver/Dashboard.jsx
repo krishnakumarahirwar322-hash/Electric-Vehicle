@@ -44,12 +44,19 @@ const Dashboard = () => {
   const [rideActionError, setRideActionError] = useState("");
   const [clockNow, setClockNow] = useState(null);
   const lastCancellationNoticeRef = useRef(null);
+  const driverTokenRef = useRef(null);
   const driverLocationWatch = useRef(null);
   const mapElement = useRef(null);
   const mapRef = useRef(null);
   const rideMarkerRef = useRef(null);
   const driverMarkerRef = useRef(null);
   const activeRouteRef = useRef(null);
+
+  const driverAuthConfig = () => ({
+    headers: driverTokenRef.current
+      ? { Authorization: `Bearer ${driverTokenRef.current}` }
+      : {}
+  });
 
   useEffect(() => {
     const initialTimer = window.setTimeout(() => setClockNow(Date.now()), 0);
@@ -67,12 +74,13 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDriverData = async () => {
       try {
+        driverTokenRef.current = localStorage.getItem("token");
         // ============================================
         // GET LOGGED-IN DRIVER
         // Token api.js interceptor automatically bhejega
         // ============================================
 
-        const driverResponse = await api.get("/api/drivers/me");
+        const driverResponse = await api.get("/api/drivers/me", driverAuthConfig());
 
         console.log(
           "Dashboard Driver Data:",
@@ -93,7 +101,8 @@ const Dashboard = () => {
         // ============================================
 
         const dashboardResponse = await api.get(
-          "/api/drivers/dashboard"
+          "/api/drivers/dashboard",
+          driverAuthConfig()
         );
 
         console.log(
@@ -142,8 +151,8 @@ const Dashboard = () => {
     const refreshRideData = async () => {
       try {
         const [requestResponse, activeResponse] = await Promise.all([
-          api.get("/api/rides/driver/requests"),
-          api.get("/api/rides/driver/active")
+          api.get("/api/rides/driver/requests", driverAuthConfig()),
+          api.get("/api/rides/driver/active", driverAuthConfig())
         ]);
         setRequests(requestResponse.data?.requests || []);
         const ride = activeResponse.data?.ride || null;
@@ -169,7 +178,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!activeRide || !navigator.geolocation) return undefined;
     driverLocationWatch.current = navigator.geolocation.watchPosition(({ coords }) => {
-      api.post(`/api/rides/${activeRide.id}/location`, { lat: coords.latitude, lng: coords.longitude }).catch(() => {});
+      api.post(`/api/rides/${activeRide.id}/location`, { lat: coords.latitude, lng: coords.longitude }, driverAuthConfig()).catch(() => {});
     });
     return () => navigator.geolocation.clearWatch(driverLocationWatch.current);
   }, [activeRide]);
@@ -268,7 +277,7 @@ const Dashboard = () => {
 
   const handleGoOffline = async () => {
     try {
-      const response = await api.put("/api/drivers/online", { is_online: !isOnline });
+      const response = await api.put("/api/drivers/online", { is_online: !isOnline }, driverAuthConfig());
       setIsOnline(response.data.is_online);
     } catch (statusError) {
       setError(statusError.response?.data?.message || "Online status update failed");
@@ -279,7 +288,7 @@ const Dashboard = () => {
     setRideActionLoading(true);
     setRideActionError("");
     try {
-      await api.put(`/api/rides/${rideId}/accept`);
+      await api.put(`/api/rides/${rideId}/accept`, {}, driverAuthConfig());
       setRequests((items) => items.filter((item) => item.id !== rideId));
     } catch (actionError) {
       setRideActionError(actionError.response?.data?.message || "Could not accept this ride. Please retry.");
@@ -290,7 +299,7 @@ const Dashboard = () => {
 
   const rejectRide = async (rideId) => {
     try {
-      await api.post(`/api/rides/${rideId}/reject`);
+      await api.post(`/api/rides/${rideId}/reject`, {}, driverAuthConfig());
       setRequests((items) => items.filter((item) => item.id !== rideId));
     } catch (rejectError) {
       setError(rejectError.response?.data?.message || "Ride rejection failed");
@@ -301,7 +310,7 @@ const Dashboard = () => {
     setRideActionLoading(true);
     setRideActionError("");
     try {
-      const response = await api.post(`/api/rides/${activeRide.id}/arrived`);
+      const response = await api.post(`/api/rides/${activeRide.id}/arrived`, {}, driverAuthConfig());
       setActiveRide((ride) => ({ ...ride, status: "arrived", otp_expires_at: response.data.otp_expires_at }));
     } catch (actionError) {
       setRideActionError(actionError.response?.data?.message || "Could not update arrival. Please retry.");
@@ -318,7 +327,7 @@ const Dashboard = () => {
     setRideActionLoading(true);
     setRideActionError("");
     try {
-      await api.post(`/api/rides/${activeRide.id}/verify-otp`, { otp });
+      await api.post(`/api/rides/${activeRide.id}/verify-otp`, { otp }, driverAuthConfig());
       setActiveRide((ride) => ({ ...ride, status: "started", otp_expires_at: null }));
       setOtp("");
     } catch (actionError) {
@@ -332,7 +341,7 @@ const Dashboard = () => {
     setRideActionLoading(true);
     setRideActionError("");
     try {
-      await api.put(`/api/rides/${activeRide.id}/complete`);
+      await api.put(`/api/rides/${activeRide.id}/complete`, {}, driverAuthConfig());
       setActiveRide(null);
     } catch (actionError) {
       setRideActionError(actionError.response?.data?.message || "Ride could not be completed. Please retry.");
