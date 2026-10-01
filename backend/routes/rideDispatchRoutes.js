@@ -36,7 +36,7 @@ const verifyRideOtp = (req, res) => {
 
     const sql = `
         UPDATE rides r
-        JOIN drivers d ON d.id = r.driver_id
+        JOIN drivers d ON d.id = r.driver_id AND d.status = 'approved'
         SET r.status = 'started', r.otp = NULL, r.otp_expires_at = NULL
         WHERE r.id = ? AND d.user_id = ? AND r.status = 'arrived'
             AND r.otp = ? AND (r.otp_expires_at IS NULL OR r.otp_expires_at > NOW())
@@ -47,6 +47,19 @@ const verifyRideOtp = (req, res) => {
             return res.status(400).json({ success: false, message: "OTP is incorrect or expired" });
         }
         return res.json({ success: true, message: "OTP verified; ride started" });
+    });
+};
+
+const requireApprovedDriver = (req, res, next) => {
+    db.query("SELECT id FROM drivers WHERE user_id = ? AND status = 'approved' LIMIT 1", [req.user.id], (err, drivers) => {
+        if (err) {
+            console.error("OTP driver authorization lookup failed:", err.message);
+            return res.status(500).json({ success: false, message: "Could not verify driver authorization" });
+        }
+        if (!drivers.length) {
+            return res.status(403).json({ success: false, message: "An approved driver account is required to verify ride OTP" });
+        }
+        return next();
     });
 };
 
@@ -91,7 +104,7 @@ router.get("/available-drivers", authMiddleware, roleMiddleware("user"), (req, r
     });
 });
 
-router.get("/active", authMiddleware, roleMiddleware("user"), (req, res) => readUserActiveRide(req.user.id, res));
+router.get("/active", authMiddleware, (req, res) => readUserActiveRide(req.user.id, res));
 
 router.get("/driver/requests", authMiddleware, roleMiddleware("driver"), (req, res) => {
     const sql = `
@@ -185,8 +198,8 @@ router.post("/:rideId/arrived", authMiddleware, roleMiddleware("driver"), (req, 
     });
 });
 
-router.post("/:rideId/verify-otp", authMiddleware, roleMiddleware("driver"), verifyRideOtp);
-router.put("/:rideId/start", authMiddleware, roleMiddleware("driver"), verifyRideOtp);
+router.post("/:rideId/verify-otp", authMiddleware, requireApprovedDriver, verifyRideOtp);
+router.put("/:rideId/start", authMiddleware, requireApprovedDriver, verifyRideOtp);
 
 router.post("/:rideId/location", authMiddleware, roleMiddleware("driver"), (req, res) => {
     const lat = Number(req.body.lat);
