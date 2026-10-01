@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Users,
@@ -36,22 +36,16 @@ const Dashboard = () => {
   const [lastSevenDays, setLastSevenDays] = useState([]);
 
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
 
   // ================= GET DASHBOARD DATA =================
-
-  useEffect(() => {
-    getDashboardStats();
-  }, []);
-
 
   const getDashboardStats = async () => {
 
     try {
 
       const token = localStorage.getItem("token");
-
-      console.log("ADMIN TOKEN:", token);
 
       const response = await api.get("/api/admin/stats", {
         headers: {
@@ -90,6 +84,13 @@ const Dashboard = () => {
       console.error(
         error.response?.data || error.message
       );
+      if (error.response?.status === 403) {
+        setLoadError("This account does not have admin access. Sign out and sign in with your admin account. A driver application does not grant admin privileges.");
+      } else if (error.response?.status === 401) {
+        setLoadError("Your session has expired. Sign in again with your admin account.");
+      } else {
+        setLoadError(error.response?.data?.message || "Admin dashboard could not be loaded. Check that the backend is running.");
+      }
 
     } finally {
 
@@ -97,6 +98,11 @@ const Dashboard = () => {
 
     }
   };
+
+  useEffect(() => {
+    const timer = window.setTimeout(getDashboardStats, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
 
   // ================= LOADING =================
@@ -119,6 +125,19 @@ const Dashboard = () => {
 
     );
 
+  }
+
+  if (loadError) {
+    return (
+      <AdminLayout>
+        <div className="dashboard-content">
+          <section className="admin-access-error" role="alert">
+            <h2>Admin dashboard unavailable</h2>
+            <p>{loadError}</p>
+          </section>
+        </div>
+      </AdminLayout>
+    );
   }
 
 

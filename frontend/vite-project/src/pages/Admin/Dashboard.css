@@ -492,3 +492,24 @@
   }
 
 }
+
+.admin-access-error {
+  max-width: 720px;
+  margin: 48px auto;
+  padding: 24px;
+  border: 1px solid #efc9c6;
+  border-radius: 8px;
+  background: #fff8f7;
+  color: #752b26;
+}
+
+.admin-access-error h2 {
+  margin: 0 0 8px;
+  color: #8c312b;
+  font-size: 20px;
+}
+
+.admin-access-error p {
+  margin: 0;
+  line-height: 1.55;
+}

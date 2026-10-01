@@ -221,7 +221,9 @@ const DriverManagement = () => {
       setLoadError("");
     } catch (error) {
       console.error("Drivers fetch karne me error aayi:", error);
-      setLoadError(error.response?.data?.message || "Drivers could not be loaded. Sign in as admin.");
+      setLoadError(error.response?.status === 403
+        ? "This account does not have admin access. Sign out and sign in with your admin account to review driver applications."
+        : error.response?.data?.message || "Drivers could not be loaded. Check the backend connection.");
     } finally {
       setLoading(false);
     }
