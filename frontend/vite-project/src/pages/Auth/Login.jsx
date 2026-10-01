@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import "./Login.css";
 import { loginUser } from "../../services/authApi.js";
+import { saveAuthToken } from "../../services/authSession";
 
 const Login = () => {
 const navigate = useNavigate();
@@ -37,7 +38,7 @@ const navigate = useNavigate();
       const role = user?.role?.toLowerCase();
 
       // JWT token save
-      localStorage.setItem("token", response.data.token);
+      saveAuthToken(response.data.token);
 
       // User information save
       localStorage.setItem("user", JSON.stringify(user));

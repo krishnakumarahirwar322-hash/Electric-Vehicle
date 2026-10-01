@@ -1,7 +1,7 @@
-import React from "react";
 import { Car, Clock3, LogOut, UserCircle, Zap } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./UserSideBar.css";
+import { clearAuthSession } from "../../services/authSession";
 
 const UserSidebar = () => {
   const navigate = useNavigate();
@@ -12,8 +12,7 @@ const UserSidebar = () => {
     { name: "Profile", icon: UserCircle, path: "/user/profile" }
   ];
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuthSession();
     navigate("/login");
   };
   return (

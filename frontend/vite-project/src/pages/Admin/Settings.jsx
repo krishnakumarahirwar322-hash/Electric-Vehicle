@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
+import { clearAuthSession, getAuthToken } from "../../services/authSession";
 
 const AdminUsersList = () => {
   const navigate = useNavigate();
@@ -10,20 +11,15 @@ const AdminUsersList = () => {
   const [loading, setLoading] = useState(true);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuthSession();
     navigate("/login");
   };
-
-  useEffect(() => {
-    fetchAccounts();
-  }, []);
 
   const fetchAccounts = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/admin/accounts", {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${getAuthToken()}`,
         },
       });
       const result = await response.json();
@@ -40,6 +36,11 @@ const AdminUsersList = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const timer = window.setTimeout(fetchAccounts, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const currentList = activeTab === "user" ? data.users : data.drivers;
 
@@ -163,7 +164,6 @@ const AdminUsersList = () => {
             justifyContent: "center",
             gap: "8px",
             cursor: "pointer",
-            display: "none",
           }}
           className="admin-settings-mobile-logout"
         >

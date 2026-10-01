@@ -1214,3 +1214,210 @@
   opacity: 0.6;
   cursor: wait;
 }
+
+@media (max-width: 600px) {
+  .driver-map-area {
+    height: 36vh;
+    min-height: 260px;
+    max-height: 340px;
+  }
+
+  .today-earning,
+  .online-status {
+    top: 12px;
+    height: 40px;
+    padding: 0 11px;
+    font-size: 12px;
+  }
+
+  .today-earning {
+    left: 12px;
+  }
+
+  .online-status {
+    right: 12px;
+  }
+
+  .driver-info-panel {
+    margin-top: -20px;
+    min-height: 0;
+    padding: 12px 14px 20px;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .panel-handle {
+    margin-bottom: 18px;
+  }
+
+  .driver-greeting h1 {
+    font-size: 23px;
+    line-height: 29px;
+  }
+
+  .driver-greeting p {
+    font-size: 13px;
+  }
+
+  .driver-stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 16px;
+  }
+
+  .driver-stat-card {
+    min-width: 0;
+    min-height: 112px;
+    padding: 10px 4px;
+    box-sizing: border-box;
+  }
+
+  .driver-stat-card strong {
+    font-size: 20px;
+    line-height: 25px;
+  }
+
+  .driver-stat-card span {
+    font-size: 10px;
+  }
+
+  .ride-requests-card,
+  .active-ride-card {
+    margin: 14px 0;
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .driver-request {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .request-actions {
+    width: 100%;
+  }
+
+  .request-actions button {
+    flex: 1;
+    min-height: 44px;
+  }
+
+  .otp-entry {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .otp-entry input,
+  .otp-entry button,
+  .active-ride-card > button {
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 360px) {
+  .today-earning,
+  .online-status {
+    padding: 0 8px;
+    font-size: 11px;
+  }
+
+  .driver-info-panel {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .driver-map-area {
+    height: 38vh;
+    min-height: 280px;
+    max-height: 360px;
+  }
+
+  .today-earning,
+  .online-status {
+    top: 12px;
+    height: 40px;
+    padding: 0 11px;
+    font-size: 12px;
+  }
+
+  .today-earning {
+    left: 12px;
+  }
+
+  .online-status {
+    right: 12px;
+  }
+
+  .driver-info-panel {
+    padding: 13px 16px 22px;
+    min-height: 0;
+  }
+
+  .panel-handle {
+    margin-bottom: 18px;
+  }
+
+  .driver-greeting h1 {
+    font-size: 23px;
+    line-height: 29px;
+  }
+
+  .driver-greeting p {
+    font-size: 13px;
+  }
+
+  .driver-stat-grid {
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .driver-stat-card {
+    min-height: 126px;
+    padding: 12px 6px;
+    box-sizing: border-box;
+  }
+
+  .driver-stat-card strong {
+    font-size: 21px;
+    line-height: 26px;
+  }
+
+  .driver-stat-card span {
+    font-size: 11px;
+  }
+
+  .driver-request {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .request-actions {
+    width: 100%;
+  }
+
+  .request-actions button {
+    flex: 1;
+    min-height: 42px;
+  }
+
+  .active-ride-card {
+    padding: 13px;
+  }
+
+  .otp-entry {
+    flex-direction: column;
+  }
+
+  .otp-entry input,
+  .otp-entry button,
+  .active-ride-card > button {
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+    font-size: 15px;
+  }
+}

@@ -12,6 +12,7 @@
 
 
 import axios from "axios";
+import { clearAuthToken, getAuthToken } from "./authSession";
 
 const api = axios.create({
   baseURL: "http://localhost:5000",
@@ -20,9 +21,11 @@ const api = axios.create({
 // 1. Request Interceptor: Existing Token Attach Karne Ke Liye
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const skipAuth = config.skipAuth;
+    delete config.skipAuth;
+    const token = getAuthToken();
     const hasExplicitAuthorization = config.headers?.Authorization || config.headers?.authorization;
-    if (token && !hasExplicitAuthorization) {
+    if (!skipAuth && token && !hasExplicitAuthorization) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -36,12 +39,12 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       console.error("Token expire ho gaya hai. Re-login karein.");
-      
-      // Expire token ko clean karein
-      localStorage.removeItem("token");
-      
-      // User ko login page par redirect karein
-      window.location.href = "/login";
+      const authorization = error.config?.headers?.Authorization || error.config?.headers?.authorization || "";
+      const failedToken = authorization.replace(/^Bearer\s+/i, "");
+      if (failedToken) {
+        clearAuthToken(failedToken);
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }

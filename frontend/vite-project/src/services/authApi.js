@@ -5,7 +5,7 @@ export const signupUser = (userData) => {
 };
 
 export const loginUser = (loginData) => {
-    return api.post("/api/auth/login", loginData);
+    return api.post("/api/auth/login", loginData, { skipAuth: true });
 };
 
 export const requestPasswordReset = (email) => {

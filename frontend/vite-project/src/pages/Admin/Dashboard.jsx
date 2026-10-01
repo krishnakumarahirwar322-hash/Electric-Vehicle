@@ -45,13 +45,7 @@ const Dashboard = () => {
 
     try {
 
-      const token = localStorage.getItem("token");
-
-      const response = await api.get("/api/admin/stats", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get("/api/admin/stats");
 
 
       console.log(

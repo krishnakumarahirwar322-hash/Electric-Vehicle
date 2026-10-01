@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -15,6 +15,7 @@ import {
     LogOut
 } from "lucide-react";
 import api from "../../services/api";
+import { clearAuthSession } from "../../services/authSession";
 
 import "./Profile.css";
 
@@ -106,8 +107,7 @@ const Profile = () => {
 
 
     const handleSignOut = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        clearAuthSession();
         navigate("/login");
 
     };

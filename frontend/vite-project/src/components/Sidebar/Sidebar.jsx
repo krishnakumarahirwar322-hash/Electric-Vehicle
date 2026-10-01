@@ -1,4 +1,3 @@
-import React from "react";
 import {
   LayoutDashboard,
   Users,
@@ -9,6 +8,7 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 
 import "./Sidebar.css";
+import { clearAuthSession } from "../../services/authSession";
 
 const menuItems = [
   {
@@ -37,8 +37,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuthSession();
     navigate("/login");
   };
 

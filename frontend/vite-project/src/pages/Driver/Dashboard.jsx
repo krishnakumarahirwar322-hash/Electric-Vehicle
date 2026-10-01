@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 
 import api from "../../services/api";
+import { getAuthToken } from "../../services/authSession";
 
 import {
   Car,
@@ -74,7 +75,10 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDriverData = async () => {
       try {
-        driverTokenRef.current = localStorage.getItem("token");
+        driverTokenRef.current = getAuthToken();
+        if (driverTokenRef.current && !sessionStorage.getItem("token")) {
+          sessionStorage.setItem("token", driverTokenRef.current);
+        }
         // ============================================
         // GET LOGGED-IN DRIVER
         // Token api.js interceptor automatically bhejega

@@ -416,9 +416,10 @@
 
 
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import api from "../../services/api";
+import { clearAuthSession } from "../../services/authSession";
 
 import {
   Car,
@@ -542,7 +543,7 @@ const Profile = () => {
 
   const handleLogout = () => {
 
-    localStorage.removeItem("token");
+    clearAuthSession();
 
     window.location.href = "/login";
 
