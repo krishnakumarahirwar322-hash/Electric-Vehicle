@@ -34,5 +34,7 @@ export const updateDriverStatus = async (driverId, status) => {
   });
 };
 
+export const approveDriver = ({ driverId }) => updateDriverStatus(driverId, "approved");
+
     // YA agar aapne router.put("/:id/status") ya router.patch("/:id") banaya hai:
     // return api.put(`/api/drivers/${driverId}/status`, { status });

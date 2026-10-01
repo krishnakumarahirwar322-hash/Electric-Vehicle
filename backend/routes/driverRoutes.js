@@ -2,49 +2,69 @@ const express = require("express");
 const router = express.Router();
 const driverController = require("../controllers/driverController");
 const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 const db = require("../config/db");
 
 // ================= CREATE DRIVER =================
-router.post("/", driverController.createDriver);
+router.post(
+    "/",
+    driverController.createDriver
+);
 
 // ================= REGISTER DRIVER (PENDING STATUS) =================
-router.post("/register", authMiddleware, driverController.registerDriver);
+router.post(
+    "/register",
+    authMiddleware,
+    driverController.registerDriver
+);
 
 // ================= GET LOGGED-IN DRIVER =================
-router.get("/me", authMiddleware, driverController.getMyDriver);
+router.get(
+    "/me",
+    authMiddleware,
+    driverController.getMyDriver
+);
 
 // ================= DRIVER DASHBOARD STATS =================
-router.get("/dashboard", authMiddleware, driverController.getDashboardStats);
+router.get(
+    "/dashboard",
+    authMiddleware,
+    driverController.getDashboardStats
+);
 
-// ================= DRIVER EARNINGS =================
-router.get("/earnings", authMiddleware, driverController.getDriverEarnings);
-
-// ================= TOGGLE DRIVER ONLINE STATUS =================
-router.put("/online", authMiddleware, (req, res) => {
-    const userId = req.user.id;
-    const { is_online } = req.body;
-
-    db.query(
-        "UPDATE drivers SET is_online = ? WHERE user_id = ?",
-        [is_online ? 1 : 0, userId],
-        (err, result) => {
-            if (err) {
-                console.error("Toggle online error:", err);
-                return res.status(500).json({ success: false, message: "Failed to update online status" });
-            }
-            res.json({
-                success: true,
-                message: is_online ? "You are now online" : "You are now offline",
-                is_online: is_online ? 1 : 0
-            });
+router.put("/online", authMiddleware, roleMiddleware("driver"), (req, res) => {
+    const isOnline = req.body.is_online ? 1 : 0;
+    db.query("UPDATE drivers SET is_online = ? WHERE user_id = ? AND status = 'approved'", [isOnline, req.user.id], (err, result) => {
+        if (err) {
+            console.error("Driver online status update failed:", err.message);
+            return res.status(500).json({ success: false, message: "Could not update online status" });
         }
-    );
+        if (result.affectedRows === 0) {
+            return res.status(403).json({ success: false, message: "Only approved drivers can go online" });
+        }
+        return res.json({ success: true, is_online: Boolean(isOnline) });
+    });
 });
 
+// ================= DRIVER EARNINGS (NEW ADDED ROUTE) =================
+router.get(
+    "/earnings",
+    authMiddleware,
+    driverController.getDriverEarnings
+);
+
 // ================= GET ALL DRIVERS =================
-router.get("/", driverController.getAllDrivers);
+router.get(
+    "/",
+    driverController.getAllDrivers
+);
 
 // ================= UPDATE DRIVER STATUS =================
-router.put("/status", driverController.updateDriverStatus);
+router.put(
+    "/status",
+    authMiddleware,
+    roleMiddleware("admin"),
+    driverController.updateDriverStatus
+);
 
 module.exports = router;

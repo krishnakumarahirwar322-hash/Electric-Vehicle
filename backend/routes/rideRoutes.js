@@ -9,83 +9,6 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 
 
 // ==================================================
-// GET AVAILABLE DRIVERS (online + approved)
-// USER ONLY
-// ==================================================
-
-router.get("/available-drivers", authMiddleware, (req, res) => {
-    const sql = `
-        SELECT 
-            d.id AS driver_id,
-            u.name AS driver_name,
-            u.phone AS driver_phone,
-            d.license_no,
-            d.status,
-            v.model,
-            v.vehicle_number,
-            v.vehicle_type
-        FROM drivers d
-        JOIN users u ON d.user_id = u.id
-        LEFT JOIN vehicles v ON v.driver_id = d.id
-        WHERE d.status = 'approved'
-        ORDER BY d.id DESC
-    `;
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error("Available drivers error:", err);
-            return res.status(500).json({ success: false, message: "Failed to fetch drivers" });
-        }
-        res.json({ success: true, drivers: results });
-    });
-});
-
-
-// ==================================================
-// GET USER'S ACTIVE RIDE
-// USER ONLY
-// ==================================================
-
-router.get("/active", authMiddleware, roleMiddleware("user"), (req, res) => {
-    const userId = req.user.id;
-    const sql = `
-        SELECT r.*, u2.name AS driver_name, u2.phone AS driver_phone, v.model, v.vehicle_number
-        FROM rides r
-        LEFT JOIN drivers d ON r.driver_id = d.id
-        LEFT JOIN users u2 ON d.user_id = u2.id
-        LEFT JOIN vehicles v ON r.vehicle_id = v.id
-        WHERE r.user_id = ? AND r.status NOT IN ('completed','cancelled')
-        ORDER BY r.id DESC LIMIT 1
-    `;
-    db.query(sql, [userId], (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: "Failed to fetch active ride" });
-        res.json({ success: true, ride: results[0] || null });
-    });
-});
-
-
-// ==================================================
-// GET DRIVER'S ACTIVE RIDE
-// DRIVER ONLY
-// ==================================================
-
-router.get("/driver/active", authMiddleware, roleMiddleware("driver"), (req, res) => {
-    const driverUserId = req.user.id;
-    const sql = `
-        SELECT r.*, u.name AS user_name, u.phone AS user_phone
-        FROM rides r
-        JOIN drivers d ON r.driver_id = d.id
-        JOIN users u ON r.user_id = u.id
-        WHERE d.user_id = ? AND r.status NOT IN ('completed','cancelled')
-        ORDER BY r.id DESC LIMIT 1
-    `;
-    db.query(sql, [driverUserId], (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: "Failed to fetch active ride" });
-        res.json({ success: true, ride: results[0] || null });
-    });
-});
-
-
-// ==================================================
 // CREATE RIDE
 // USER ONLY
 // ==================================================
@@ -208,6 +131,9 @@ router.get(
                 rides.distance,
                 rides.fare,
                 rides.status,
+                rides.created_at,
+                payments.payment_status,
+                payments.payment_method,
 
                 drivers.license_no,
 
@@ -222,6 +148,13 @@ router.get(
 
             LEFT JOIN vehicles
             ON rides.vehicle_id = vehicles.id
+
+            LEFT JOIN payments
+            ON payments.id = (
+                SELECT MAX(payment.id)
+                FROM payments AS payment
+                WHERE payment.ride_id = rides.id
+            )
 
             WHERE rides.user_id = ?
 

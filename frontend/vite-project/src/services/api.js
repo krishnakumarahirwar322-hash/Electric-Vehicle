@@ -33,8 +33,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Agar Backend se 401 (Unauthorized) ya 403 (Forbidden) error aaye
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+    if (error.response?.status === 401) {
       console.error("Token expire ho gaya hai. Re-login karein.");
       
       // Expire token ko clean karein

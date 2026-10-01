@@ -148,7 +148,7 @@ const getDashboardStats = (req, res) => {
                 if (err) return res.status(500).json({ success: false, message: "Failed to fetch rating" });
 
                 const walletQuery = `
-                    SELECT COALESCE(SUM(p.amount), 0) AS wallet
+                    SELECT COALESCE(SUM(COALESCE(p.driver_settlement, p.amount * 0.2)), 0) AS wallet
                     FROM payments p
                     INNER JOIN rides r ON p.ride_id = r.id
                     WHERE r.driver_id = ? AND p.payment_status = 'paid'

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Car, Clock3, UserCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../../services/api";
@@ -8,32 +8,38 @@ const History = () => {
   const [rides, setRides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [payingRide, setPayingRide] = useState(null);
+  const [loadError, setLoadError] = useState("");
 
   useEffect(() => {
-    const sessionId = new URLSearchParams(window.location.search).get("session_id");
-    if (!sessionId) return;
-    api.post("/api/payments/stripe-confirm", { session_id: sessionId })
-      .then(() => window.history.replaceState({}, "", "/user/history"))
-      .then(() => api.get("/api/rides/my-rides").then((response) => setRides(response.data?.rides || [])))
-      .catch((error) => window.alert(error.response?.data?.message || "Stripe payment verification failed"));
+    let active = true;
+    const loadHistory = async () => {
+      try {
+        const sessionId = new URLSearchParams(window.location.search).get("session_id");
+        if (sessionId) {
+          await api.post("/api/payments/stripe-confirm", { session_id: sessionId });
+          window.history.replaceState({}, "", "/user/history");
+        }
+        const response = await api.get("/api/rides/my-rides");
+        if (active) setRides(response.data?.rides || []);
+      } catch (historyError) {
+        if (active) setLoadError(historyError.response?.data?.message || "Could not load ride history. Check that you are signed in as a user and the backend is running.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    loadHistory();
+    return () => { active = false; };
   }, []);
 
   const payForRide = async (ride) => {
     setPayingRide(ride.id);
     try {
       const response = await api.post("/api/payments/stripe-checkout", { ride_id: ride.id });
-      window.location.href = response.data.checkoutUrl;
+      window.location.assign(response.data.checkoutUrl);
     } catch (paymentError) {
       window.alert(paymentError.response?.data?.message || "Payment failed");
     } finally { setPayingRide(null); }
   };
-
-  useEffect(() => {
-    api.get("/api/rides/my-rides")
-      .then((response) => setRides(response.data?.rides || []))
-      .catch(() => setRides([]))
-      .finally(() => setLoading(false));
-  }, []);
 
   return (
     <div className="history-page">
@@ -44,6 +50,8 @@ const History = () => {
       <main className="history-content">
         {loading ? (
           <div className="history-empty"><p>Loading rides...</p></div>
+        ) : loadError ? (
+          <div className="history-empty"><h2>Ride history unavailable</h2><p>{loadError}</p></div>
         ) : rides.length === 0 ? (
           <div className="history-empty">
             <div className="empty-car"><Car size={43} /></div>

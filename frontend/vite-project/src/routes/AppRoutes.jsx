@@ -1,4 +1,5 @@
-import React from "react";
+import ForgotPassword from "../pages/Auth/ForgotPassword";
+import ResetPassword from "../pages/Auth/ResetPassword";
 
 import {
   BrowserRouter,
@@ -11,6 +12,9 @@ import {
  import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
 
+import Dashboard from "../pages/Admin/Dashboard";
+import DriverManagement from "../pages/Admin/DriverManagement";
+import RideManagement from "../pages/Admin/RideManagement";
 import Settings from "../pages/Admin/Settings";
 
 
@@ -19,10 +23,6 @@ import Settings from "../pages/Admin/Settings";
 import DriverDashboard from "../pages/Driver/Dashboard";
 import Profile from "../pages/Driver/Profile";
 import Earnings from "../pages/Driver/Earnings";
-
-
-import { Users } from "lucide-react";
-
 
 
 import UserProfile from "../pages/User/Profile";
@@ -57,10 +57,10 @@ const AppRoutes = () => {
           element={<Signup />}
         />
 
-        {/* <Route
+        <Route
           path="/forgot-password"
           element={<ForgotPassword />}
-        /> */}
+        />
 
         <Route
           path="/reset-password/:token"
@@ -127,18 +127,18 @@ const AppRoutes = () => {
             DRIVER
         ========================= */}
 
-        {/* {/* <Route
+        <Route
           path="/driver/dashboard"
           element={<DriverDashboard />}
-        /> */}
+        />
 
       <Route path="/driver/profile" 
       element={<Profile />} />
 
-       {/* <Route
+       <Route
           path="/driver/earnings"
           element={<Earnings/>}
-        /> */} 
+        />
 
 
        {/* user */}

@@ -26,6 +26,9 @@ const authRoutes =
 const rideRoutes =
     require("./routes/rideRoutes");
 
+const rideDispatchRoutes =
+    require("./routes/rideDispatchRoutes");
+
 const driverRoutes =
     require("./routes/driverRoutes");
 
@@ -63,6 +66,8 @@ app.use("/users", userRoutes);
 app.use("/api/users", userRoutes);
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/rides", rideDispatchRoutes);
 
 app.use("/api/rides", rideRoutes);
 

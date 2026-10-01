@@ -129,6 +129,7 @@ const getMyDriver = (user_id, callback) => {
             drivers.id AS driver_id,
             drivers.license_no,
             drivers.status,
+            drivers.is_online,
 
             vehicles.model AS vehicle,
             vehicles.vehicle_number AS vehicle_number,

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Car, CircleDot, Clock3, CreditCard, LocateFixed, Navigation, Search, Smartphone, Square, UserCircle, WalletCards } from "lucide-react";
 import L from "leaflet";
@@ -21,6 +21,8 @@ const Home = () => {
   const [pickupCoords, setPickupCoords] = useState(null);
   const [destinationCoords, setDestinationCoords] = useState(null);
   const [drivers, setDrivers] = useState([]);
+  const [driversLoaded, setDriversLoaded] = useState(false);
+  const [driversError, setDriversError] = useState("");
   const [selectedDriver, setSelectedDriver] = useState("");
   const [payment, setPayment] = useState("cash");
   const [distance, setDistance] = useState(0);
@@ -35,6 +37,31 @@ const Home = () => {
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const sheetDragRef = useRef({ startY: 0, dragging: false, moved: false });
 
+  const requestCurrentLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setLocationStatus("Location is unavailable; enter pickup manually");
+      setUseCurrentLocation(false);
+      return;
+    }
+    setLocationStatus("Finding your current location...");
+    navigator.geolocation.getCurrentPosition(async ({ coords }) => {
+      const location = { lat: coords.latitude, lon: coords.longitude };
+      setPickupCoords(location);
+      if (pickupMarkerRef.current) pickupMarkerRef.current.remove();
+      pickupMarkerRef.current = L.circleMarker([location.lat, location.lon], { radius: 9, color: "#078b65", fillColor: "#19bd87", fillOpacity: 1, weight: 3 }).addTo(mapRef.current);
+      mapRef.current?.setView([location.lat, location.lon], 15);
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${location.lat}&lon=${location.lon}`);
+        const data = await response.json();
+        setPickup(data.display_name || "Current location");
+      } catch { setPickup("Current location"); }
+      setLocationStatus("Current location selected");
+    }, () => {
+      setUseCurrentLocation(false);
+      setLocationStatus("Location permission denied; enter pickup manually");
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  }, []);
+
   useEffect(() => {
     const map = L.map(mapElement.current).setView([DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon], 13);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap contributors" }).addTo(map);
@@ -42,9 +69,13 @@ const Home = () => {
     api.get("/api/rides/available-drivers").then((response) => {
       const available = response.data?.drivers || [];
       setDrivers(available);
+      setDriversLoaded(true);
       if (available[0]) setSelectedDriver(String(available[0].driver_id));
-    }).catch(() => setError("Available drivers could not be loaded."));
-    requestCurrentLocation();
+    }).catch((driversRequestError) => {
+      setDriversLoaded(true);
+      setDriversError(driversRequestError.response?.data?.message || "Available drivers could not be loaded. Check your login and backend connection.");
+    });
+    const locationTimer = window.setTimeout(requestCurrentLocation, 0);
     const refreshActiveRide = async () => {
       try {
         const response = await api.get("/api/rides/active");
@@ -55,8 +86,8 @@ const Home = () => {
     };
     refreshActiveRide();
     const timer = setInterval(refreshActiveRide, 5000);
-    return () => { clearInterval(timer); map.remove(); };
-  }, []);
+    return () => { clearInterval(timer); clearTimeout(locationTimer); map.remove(); };
+  }, [requestCurrentLocation]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -101,30 +132,6 @@ const Home = () => {
     markerRef.current = L.circleMarker([coords.lat, coords.lon], { radius: type === "pickup" ? 9 : 8, color: type === "pickup" ? "#078b65" : "#202124", fillColor: type === "pickup" ? "#19bd87" : "#202124", fillOpacity: 1, weight: 3 }).addTo(mapRef.current);
   };
 
-  const requestCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationStatus("Location is unavailable; enter pickup manually");
-      setUseCurrentLocation(false);
-      return;
-    }
-    setLocationStatus("Finding your current location...");
-    navigator.geolocation.getCurrentPosition(async ({ coords }) => {
-      const location = { lat: coords.latitude, lon: coords.longitude };
-      setPickupCoords(location);
-      putMarker("pickup", location);
-      mapRef.current?.setView([location.lat, location.lon], 15);
-      try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${location.lat}&lon=${location.lon}`);
-        const data = await response.json();
-        setPickup(data.display_name || "Current location");
-      } catch { setPickup("Current location"); }
-      setLocationStatus("Current location selected");
-    }, () => {
-      setUseCurrentLocation(false);
-      setLocationStatus("Location permission denied; enter pickup manually");
-    }, { enableHighAccuracy: true, timeout: 10000 });
-  };
-
   const geocode = async (query) => {
     const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`);
     const results = await response.json();
@@ -162,7 +169,6 @@ const Home = () => {
     if (!destinationCoords || !pickupCoords || !distance) {
       setError("Choose pickup and destination first."); return;
     }
-    const driver = drivers.find((item) => String(item.driver_id) === selectedDriver);
     setLoading(true);
     try {
       const response = await api.post("/api/rides", { pickup, destination, distance: Number(distance.toFixed(2)), fare: Number(fare.toFixed(2)), payment_method: payment, pickup_lat: pickupCoords.lat, pickup_lng: pickupCoords.lon, destination_lat: destinationCoords.lat, destination_lng: destinationCoords.lon });
@@ -237,7 +243,7 @@ const Home = () => {
           <div className="location-row"><div className="location-icon drop-icon"><Square size={12} fill="currentColor" /></div><div className="location-content destination-content"><span className="location-label">DESTINATION</span><div className="destination-input"><input value={destination} onChange={(event) => { setDestination(event.target.value); setDestinationCoords(null); }} placeholder="Enter destination" /><button onClick={handleDestination} title="Find route"><Search size={16} /></button></div></div></div>
         </div>}
         {showBookingForm && <><div className="ride-summary"><span>{distance ? `${distance.toFixed(1)} km` : "Route distance"}</span><strong>{fare ? `₹${fare.toFixed(2)}` : "Fare calculated after route"}</strong></div>
-        <div className="driver-availability">{drivers.length ? `${drivers.length} online driver${drivers.length > 1 ? "s" : ""} can receive this request` : "Looking for online drivers..."}</div>
+        <div className="driver-availability">{drivers.length ? `${drivers.length} online driver${drivers.length > 1 ? "s" : ""} can receive this request` : driversError || (driversLoaded ? "No available drivers are online right now. You can still send a request." : "Checking online drivers...")}</div>
         <div className="payment-section"><h3>Payment</h3><div className="payment-options">{[["cash", WalletCards, "CASH"], ["upi", Smartphone, "UPI"], ["card", CreditCard, "CARD"]].map(([value, Icon, label]) => <button key={value} className={`payment-button ${payment === value ? "active" : ""}`} onClick={() => setPayment(value)}><Icon size={16} /><span>{label}</span></button>)}</div></div></>}
         {error && <p className="booking-message error">{error}</p>}{message && <p className="booking-message success">{message}</p>}
         {activeRide && <div className={`user-ride-status ${activeRide.status === "requested" ? "waiting-ride-status" : ""}`}>
@@ -247,7 +253,7 @@ const Home = () => {
           {activeRide.status === "accepted" && <span>Driver is coming to your pickup location.</span>}
           {activeRide.status === "arrived" && <span>Driver arrived. Share OTP: <b>{activeRide.otp_code || "Check your ride details"}</b></span>}
           {activeRide.status === "started" && <span>Trip started after OTP verification. Destination route is live.</span>}
-          {(activeRide.status === "accepted" || activeRide.status === "arrived") && <div className="cancel-ride-box">
+          {["requested", "accepted", "arrived"].includes(activeRide.status) && <div className="cancel-ride-box">
             <div className="cancel-ride-heading"><strong>Need to cancel?</strong><span>You can cancel before the trip starts.</span></div>
             <label htmlFor="cancel-reason">Reason for cancellation</label>
             <select id="cancel-reason" value={cancelReason} onChange={(event) => setCancelReason(event.target.value)}>
