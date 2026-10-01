@@ -1,6 +1,6 @@
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import "./Signup.css";
 import { signupUser } from "../../services/authApi.js";
@@ -191,7 +191,11 @@ const Signup = () => {
         {/* LOGIN LINK */}
         <div className="signup-bottom-text">
           <span>Already have an account?</span>
-          <a href="/login">Login</a>
+          <Link to="/login">Login</Link>
+        </div>
+        <div className="signup-bottom-text">
+          <span>Want to drive with VoltRide?</span>
+          <Link to="/driver/register">Apply as a driver</Link>
         </div>
       </div>
     </div>

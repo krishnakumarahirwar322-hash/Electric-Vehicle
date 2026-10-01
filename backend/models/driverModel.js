@@ -88,7 +88,8 @@ const registerDriver = (driverData, callback) => {
 const getAllDrivers = (callback) => {
     const sql = `
         SELECT 
-            drivers.id, 
+            drivers.id AS driver_id,
+            drivers.id,
             drivers.user_id, 
             drivers.license_no, 
             drivers.status,
@@ -107,8 +108,31 @@ const getAllDrivers = (callback) => {
 
 //updated status
 const updateDriverStatus = (driverId, status, callback) => {
-    const sql = `UPDATE drivers SET status = ? WHERE id = ?`;
-    db.query(sql, [status, driverId], callback);
+    db.beginTransaction((transactionError) => {
+        if (transactionError) return callback(transactionError);
+
+        db.query("SELECT user_id FROM drivers WHERE id = ? FOR UPDATE", [driverId], (lookupError, drivers) => {
+            if (lookupError || !drivers.length) {
+                return db.rollback(() => callback(lookupError || new Error("Driver application not found")));
+            }
+
+            db.query("UPDATE drivers SET status = ?, is_online = 0 WHERE id = ?", [status, driverId], (updateError) => {
+                if (updateError) return db.rollback(() => callback(updateError));
+
+                const accountRole = status === "approved" ? "driver" : status === "rejected" ? "user" : null;
+                const finish = (roleError) => {
+                    if (roleError) return db.rollback(() => callback(roleError));
+                    db.commit((commitError) => {
+                        if (commitError) return db.rollback(() => callback(commitError));
+                        return callback(null, { affectedRows: 1 });
+                    });
+                };
+
+                if (!accountRole) return finish(null);
+                db.query("UPDATE users SET role = ? WHERE id = ?", [accountRole, drivers[0].user_id], (roleError) => finish(roleError));
+            });
+        });
+    });
 };
 
 

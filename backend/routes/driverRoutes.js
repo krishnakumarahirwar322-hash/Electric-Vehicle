@@ -5,9 +5,13 @@ const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
 const db = require("../config/db");
 
+router.post("/apply", driverController.applyForDriver);
+
 // ================= CREATE DRIVER =================
 router.post(
     "/",
+    authMiddleware,
+    roleMiddleware("admin"),
     driverController.createDriver
 );
 
@@ -15,6 +19,7 @@ router.post(
 router.post(
     "/register",
     authMiddleware,
+    roleMiddleware("user"),
     driverController.registerDriver
 );
 
@@ -56,6 +61,8 @@ router.get(
 // ================= GET ALL DRIVERS =================
 router.get(
     "/",
+    authMiddleware,
+    roleMiddleware("admin"),
     driverController.getAllDrivers
 );
 

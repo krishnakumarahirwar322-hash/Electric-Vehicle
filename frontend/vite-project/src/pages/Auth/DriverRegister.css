@@ -1,0 +1,91 @@
+.driver-application-page {
+  align-items: flex-start;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.driver-application-container {
+  max-width: 540px;
+}
+
+.driver-application-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.driver-application-form select {
+  width: 100%;
+  height: 43px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 0 12px;
+  background: #fff;
+  color: #222;
+  font-size: 12px;
+}
+
+.driver-application-wide {
+  grid-column: 1 / -1;
+}
+
+.driver-application-form .signup-submit-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.driver-application-error {
+  margin: 0;
+  color: #b42318;
+  font-size: 12px;
+}
+
+.driver-application-success {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin-top: 26px;
+  padding: 22px 16px;
+  border: 1px solid #bfe5d4;
+  border-radius: 10px;
+  background: #effaf5;
+  color: #286452;
+  text-align: center;
+}
+
+.driver-application-success h3,
+.driver-application-success p {
+  margin: 0;
+}
+
+.driver-application-success h3 {
+  color: #087f5b;
+}
+
+.driver-application-success p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.driver-application-success a {
+  color: #087f5b;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  .driver-application-page {
+    padding: 12px;
+  }
+
+  .driver-application-form {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .driver-application-wide {
+    grid-column: auto;
+  }
+}

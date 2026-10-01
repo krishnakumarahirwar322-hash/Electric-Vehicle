@@ -188,7 +188,7 @@
 
 
 // export default DriverManagement;
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import DriverCard from "../../components/DriverCard/DriverCard";
 import { getAllDrivers, approveDriver } from "../../services/driverService";
@@ -198,13 +198,13 @@ const DriverManagement = () => {
   const [drivers, setDrivers] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   /* =================================
       1. DATABASE SE DATA FETCH KAREIN
   ================================= */
   const fetchDrivers = async () => {
     try {
-      setLoading(true);
       const response = await getAllDrivers();
       console.log("Backend Response:", response.data);
 
@@ -218,15 +218,22 @@ const DriverManagement = () => {
       }
 
       setDrivers(list);
+      setLoadError("");
     } catch (error) {
       console.error("Drivers fetch karne me error aayi:", error);
+      setLoadError(error.response?.data?.message || "Drivers could not be loaded. Sign in as admin.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDrivers();
+    const initialTimer = window.setTimeout(fetchDrivers, 0);
+    const refreshTimer = window.setInterval(fetchDrivers, 5000);
+    return () => {
+      window.clearTimeout(initialTimer);
+      window.clearInterval(refreshTimer);
+    };
   }, []);
 
   /* =================================
@@ -302,6 +309,10 @@ const DriverManagement = () => {
           {loading ? (
             <p style={{ textAlign: "center", width: "100%", padding: "20px" }}>
               Loading drivers...
+            </p>
+          ) : loadError ? (
+            <p role="alert" style={{ textAlign: "center", width: "100%", padding: "20px", color: "#b42318" }}>
+              {loadError}
             </p>
           ) : filteredDrivers.length > 0 ? (
             filteredDrivers.map((driver, index) => {

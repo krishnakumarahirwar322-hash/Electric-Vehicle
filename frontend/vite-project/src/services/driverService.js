@@ -15,10 +15,11 @@
 
 import api from "./api";
 
-// 1. New Driver Register Karne Ke Liye (Pending Status Direct Banega)
-export const registerDriver = (driverData) => {
-    return api.post("/api/drivers/register", driverData);
+export const applyForDriver = (applicationData) => {
+  return api.post("/api/drivers/apply", applicationData);
 };
+
+export const registerDriver = applyForDriver;
 
 // 2. Sabhi Drivers Fetch Karne Ke Liye (Pending + Approved)
 export const getAllDrivers = () => {

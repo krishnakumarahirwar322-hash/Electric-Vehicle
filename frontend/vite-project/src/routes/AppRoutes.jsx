@@ -11,6 +11,7 @@ import {
 
  import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
+import DriverRegister from "../pages/Auth/DriverRegister";
 
 import Dashboard from "../pages/Admin/Dashboard";
 import DriverManagement from "../pages/Admin/DriverManagement";
@@ -55,6 +56,11 @@ const AppRoutes = () => {
         <Route
           path="/signup"
           element={<Signup />}
+        />
+
+        <Route
+          path="/driver/register"
+          element={<DriverRegister />}
         />
 
         <Route

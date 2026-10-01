@@ -1,5 +1,76 @@
 const driverModel = require("../models/driverModel");
 const db = require("../config/db");
+const bcrypt = require("bcryptjs");
+
+const applyForDriver = async (req, res) => {
+    const name = String(req.body.name || "").trim();
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const phone = String(req.body.phone || "").trim();
+    const password = String(req.body.password || "");
+    const licenseNo = String(req.body.license_no || "").trim();
+    const model = String(req.body.model || "").trim();
+    const vehicleNumber = String(req.body.vehicle_number || "").trim().toUpperCase();
+    const vehicleType = String(req.body.vehicle_type || "Electric Car").trim();
+    const pricePerKm = Number(req.body.price_per_km);
+
+    if (!name || !email || !phone || !password || !licenseNo || !model || !vehicleNumber) {
+        return res.status(400).json({ success: false, message: "Complete all personal, license, and vehicle fields" });
+    }
+    if (password.length < 8) {
+        return res.status(400).json({ success: false, message: "Password must contain at least 8 characters" });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !/^\+?[0-9\s()-]{8,20}$/.test(phone)) {
+        return res.status(400).json({ success: false, message: "Enter a valid email and phone number" });
+    }
+    if (!Number.isFinite(pricePerKm) || pricePerKm <= 0) {
+        return res.status(400).json({ success: false, message: "Enter a valid positive price per kilometre" });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        db.beginTransaction((transactionError) => {
+            if (transactionError) return res.status(500).json({ success: false, message: "Could not start driver application" });
+
+            const rollback = (statusCode, message) => db.rollback(() => res.status(statusCode).json({ success: false, message }));
+            db.query("SELECT id FROM users WHERE LOWER(email) = ? LIMIT 1", [email], (lookupError, users) => {
+                if (lookupError) return rollback(500, "Could not check email address");
+                if (users.length) return rollback(409, "An account with this email already exists");
+
+                db.query(
+                    "INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, 'driver_pending')",
+                    [name, email, hashedPassword, phone],
+                    (userError, userResult) => {
+                        if (userError) return rollback(500, "Could not create driver account");
+
+                        db.query(
+                            "INSERT INTO drivers (user_id, license_no, status, is_online) VALUES (?, ?, 'pending', 0)",
+                            [userResult.insertId, licenseNo],
+                            (driverError, driverResult) => {
+                                if (driverError) return rollback(500, "Could not save driver application");
+
+                                db.query(
+                                    "INSERT INTO vehicles (driver_id, model, vehicle_number, vehicle_type, price_per_km) VALUES (?, ?, ?, ?, ?)",
+                                    [driverResult.insertId, model, vehicleNumber, vehicleType, pricePerKm],
+                                    (vehicleError) => {
+                                        if (vehicleError) return rollback(500, "Could not save vehicle details");
+
+                                        db.commit((commitError) => {
+                                            if (commitError) return db.rollback(() => res.status(500).json({ success: false, message: "Could not submit driver application" }));
+                                            return res.status(201).json({ success: true, message: "Driver application sent for admin approval" });
+                                        });
+                                    }
+                                );
+                            }
+                        );
+                    }
+                );
+            });
+        });
+    } catch (error) {
+        console.error("Driver application password hashing failed:", error.message);
+        return res.status(500).json({ success: false, message: "Could not submit driver application" });
+    }
+};
 
 // ================= 1. CREATE DRIVER (DIRECT/ADMIN) =================
 const createDriver = (req, res) => {
@@ -32,7 +103,7 @@ const createDriver = (req, res) => {
 
 // ================= 2. REGISTER DRIVER (WITH VEHICLE) =================
 const registerDriver = (req, res) => {
-    driverModel.registerDriver(req.body, (err, result) => {
+    driverModel.registerDriver({ ...req.body, user_id: req.user.id }, (err, result) => {
         if (err) {
             return res.status(500).json({
                 success: false,
@@ -232,6 +303,7 @@ const getDriverEarnings = (req, res) => {
 
 // ================= EXPORTS =================
 module.exports = {
+    applyForDriver,
     createDriver,
     registerDriver,
     getAllDrivers,

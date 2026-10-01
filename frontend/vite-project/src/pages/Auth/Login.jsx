@@ -219,6 +219,11 @@ const navigate = useNavigate();
 
         </div>
 
+        <div className="auth-bottom-text">
+          <span>Want to drive with VoltRide?</span>
+          <Link to="/driver/register">Apply as a driver</Link>
+        </div>
+
       </div>
 
     </div>

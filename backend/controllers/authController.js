@@ -16,8 +16,7 @@ exports.signup = async (req, res) => {
             name,
             email,
             password,
-            phone,
-            role
+            phone
         } = req.body;
 
         if (!name || !email || !password || !phone) {
@@ -74,7 +73,7 @@ exports.signup = async (req, res) => {
                         email,
                         hashedPassword,
                         phone,
-                        role || "user"
+                        "user"
                     ],
                     (err, result) => {
 
@@ -176,6 +175,9 @@ exports.login = (req, res) => {
             }
 
             const role = String(user.role || "").toLowerCase();
+            if (role === "driver_pending") {
+                return res.status(403).json({ success: false, message: "Your driver application is waiting for admin approval." });
+            }
             const token = jwt.sign(
                 {
                     id: user.id,
