@@ -269,7 +269,7 @@ exports.requestPasswordReset = (req, res) => {
 exports.resetPassword = (req, res) => {
     const { token } = req.params;
     const password = String(req.body.password || "");
-    if (!token || !password || password.length < 6) {
+    if (!token || !password || password.length < 8) {
         return res.status(400).json({ success: false, message: "A valid reset token and password of at least 6 characters are required" });
     }
 
