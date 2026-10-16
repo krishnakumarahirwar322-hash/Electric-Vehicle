@@ -1,8 +1,15 @@
-const { pool } = require("../config/db");
+const db = require("../config/db");
 
-const testDatabase = async (req, res) => {
-    try {
-        const [rows] = await pool.query("SELECT 1 AS database_test");
+const testDatabase = (req, res) => {
+    db.query("SELECT 1 AS database_test", (err, rows) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({
+                success: false,
+                message: "Database connection failed",
+                error: err.message
+            });
+        }
 
         res.status(200).json({
             success: true,
@@ -10,16 +17,7 @@ const testDatabase = async (req, res) => {
             database: "MySQL",
             result: rows
         });
-
-    } catch (error) {
-        console.error(error);
-
-        res.status(500).json({
-            success: false,
-            message: "Database connection failed",
-            error: error.message
-        });
-    }
+    });
 };
 
 module.exports = {

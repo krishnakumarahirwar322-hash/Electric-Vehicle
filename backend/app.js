@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
@@ -129,6 +130,14 @@ app.get("/", (req, res) => {
         message: "Electric Vehicle Booking API is running"
     });
 
+});
+
+// ================= FRONTEND STATIC SERVING =================
+
+app.use(express.static(path.join(__dirname, "../frontend/vite-project/dist")));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/vite-project/dist", "index.html"));
 });
 
 

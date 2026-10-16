@@ -30,16 +30,26 @@ const Profile = () => {
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
-    useEffect(() => {
-        api.get("/api/users/profile")
-            .then((response) => {
-                const profile = response.data.user;
+ useEffect(() => {
+    api.get("/api/users/profile")
+        .then((response) => {
+            // Check if user is wrapped inside response.data.user or directly in response.data
+            const profile = response.data.user || response.data;
+            if (profile) {
                 setUser(profile);
-                setForm({ name: profile.name || "", email: profile.email || "", phone: profile.phone || "" });
-            })
-            .catch((requestError) => setError(requestError.response?.data?.message || "Profile could not be loaded."))
-            .finally(() => setLoading(false));
-    }, []);
+                setForm({ 
+                    name: profile.name || "", 
+                    email: profile.email || "", 
+                    phone: profile.phone || "" 
+                });
+            }
+        })
+        .catch((requestError) => {
+            console.error("Profile Fetch Error:", requestError);
+            setError(requestError.response?.data?.message || "Profile could not be loaded.");
+        })
+        .finally(() => setLoading(false));
+}, []);
 
     const handleChange = (event) => setForm((previous) => ({ ...previous, [event.target.name]: event.target.value }));
 

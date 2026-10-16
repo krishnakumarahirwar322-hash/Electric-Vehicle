@@ -1,4 +1,4 @@
-// const db = require("../config/db");
+const db = require("../config/db");
 
 // ================= CREATE DRIVER (DEFAULT PENDING STATUS) =================
 const createDriver = (user_id, license_no, callback) => {
@@ -57,7 +57,6 @@ const createDriver = (user_id, license_no, callback) => {
 //     updateDriverStatus
 // };
 
-const db = require("../config/db");
 
 //regissterDriver
 const registerDriver = (driverData, callback) => {
@@ -108,28 +107,46 @@ const getAllDrivers = (callback) => {
 
 //updated status
 const updateDriverStatus = (driverId, status, callback) => {
-    db.beginTransaction((transactionError) => {
-        if (transactionError) return callback(transactionError);
+    // Pool se dedicated connection lete hain kyunki transaction ke liye zaroori hai
+    db.getConnection((connError, connection) => {
+        if (connError) return callback(connError);
 
-        db.query("SELECT user_id FROM drivers WHERE id = ? FOR UPDATE", [driverId], (lookupError, drivers) => {
-            if (lookupError || !drivers.length) {
-                return db.rollback(() => callback(lookupError || new Error("Driver application not found")));
+        connection.beginTransaction((transactionError) => {
+            if (transactionError) {
+                connection.release();
+                return callback(transactionError);
             }
 
-            db.query("UPDATE drivers SET status = ?, is_online = 0 WHERE id = ?", [status, driverId], (updateError) => {
-                if (updateError) return db.rollback(() => callback(updateError));
-
-                const accountRole = status === "approved" ? "driver" : status === "rejected" ? "user" : null;
-                const finish = (roleError) => {
-                    if (roleError) return db.rollback(() => callback(roleError));
-                    db.commit((commitError) => {
-                        if (commitError) return db.rollback(() => callback(commitError));
-                        return callback(null, { affectedRows: 1 });
+            connection.query("SELECT user_id FROM drivers WHERE id = ? FOR UPDATE", [driverId], (lookupError, drivers) => {
+                if (lookupError || !drivers.length) {
+                    return connection.rollback(() => {
+                        connection.release();
+                        callback(lookupError || new Error("Driver application not found"));
                     });
-                };
+                }
 
-                if (!accountRole) return finish(null);
-                db.query("UPDATE users SET role = ? WHERE id = ?", [accountRole, drivers[0].user_id], (roleError) => finish(roleError));
+                connection.query("UPDATE drivers SET status = ?, is_online = 0 WHERE id = ?", [status, driverId], (updateError) => {
+                    if (updateError) return connection.rollback(() => {
+                        connection.release();
+                        callback(updateError);
+                    });
+
+                    const accountRole = status === "approved" ? "driver" : status === "rejected" ? "user" : null;
+                    const finish = (roleError) => {
+                        if (roleError) return connection.rollback(() => {
+                            connection.release();
+                            callback(roleError);
+                        });
+                        connection.commit((commitError) => {
+                            connection.release();
+                            if (commitError) return connection.rollback(() => callback(commitError));
+                            return callback(null, { affectedRows: 1 });
+                        });
+                    };
+
+                    if (!accountRole) return finish(null);
+                    connection.query("UPDATE users SET role = ? WHERE id = ?", [accountRole, drivers[0].user_id], (roleError) => finish(roleError));
+                });
             });
         });
     });

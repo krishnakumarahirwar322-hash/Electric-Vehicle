@@ -34,18 +34,20 @@ exports.signup = async (req, res) => {
             WHERE email = ?
         `;
 
-        db.query(
+       db.query(
             checkSql,
             [email],
             async (err, results) => {
 
                 if (err) {
+                    // YE LINE ADD KAREIN: Asli error log me print karne ke liye
+                    console.log("❌ SIGNUP SELECT ERROR:", err); 
 
                     return res.status(500).json({
                         success: false,
-                        message: "Database error"
+                        message: "Database error",
+                        exactError: err.message // Frontend me bhi exact error dikhane ke liye
                     });
-
                 }
 
                 if (results.length > 0) {
@@ -78,7 +80,7 @@ exports.signup = async (req, res) => {
                     (err, result) => {
 
                         if (err) {
-
+                            // YE LINE ADD KAREIN: Asli error log me print karne ke liye
                             return res.status(500).json({
                                 success: false,
                                 message: "Signup failed"

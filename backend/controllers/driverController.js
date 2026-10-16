@@ -2,6 +2,7 @@ const driverModel = require("../models/driverModel");
 const db = require("../config/db");
 const bcrypt = require("bcryptjs");
 
+
 const applyForDriver = async (req, res) => {
     const name = String(req.body.name || "").trim();
     const email = String(req.body.email || "").trim().toLowerCase();
@@ -9,66 +10,171 @@ const applyForDriver = async (req, res) => {
     const password = String(req.body.password || "");
     const licenseNo = String(req.body.license_no || "").trim();
     const model = String(req.body.model || "").trim();
-    const vehicleNumber = String(req.body.vehicle_number || "").trim().toUpperCase();
+    const vehicleNumber = String(req.body.vehicle_number || "")
+        .trim()
+        .toUpperCase();
     const vehicleType = String(req.body.vehicle_type || "Electric Car").trim();
     const pricePerKm = Number(req.body.price_per_km);
 
-    if (!name || !email || !phone || !password || !licenseNo || !model || !vehicleNumber) {
-        return res.status(400).json({ success: false, message: "Complete all personal, license, and vehicle fields" });
+    // Validate required fields
+    if (
+        !name ||
+        !email ||
+        !phone ||
+        !password ||
+        !licenseNo ||
+        !model ||
+        !vehicleNumber
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: "Complete all personal, license, and vehicle fields"
+        });
     }
+
     if (password.length < 8) {
-        return res.status(400).json({ success: false, message: "Password must contain at least 8 characters" });
+        return res.status(400).json({
+            success: false,
+            message: "Password must contain at least 8 characters"
+        });
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !/^\+?[0-9\s()-]{8,20}$/.test(phone)) {
-        return res.status(400).json({ success: false, message: "Enter a valid email and phone number" });
+
+    if (
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+        !/^\+?[0-9\s()-]{8,20}$/.test(phone)
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: "Enter a valid email and phone number"
+        });
     }
+
     if (!Number.isFinite(pricePerKm) || pricePerKm <= 0) {
-        return res.status(400).json({ success: false, message: "Enter a valid positive price per kilometre" });
+        return res.status(400).json({
+            success: false,
+            message: "Enter a valid positive price per kilometre"
+        });
     }
+
+    let connection;
+    let transactionStarted = false;
 
     try {
+        // Hash password before saving it
         const hashedPassword = await bcrypt.hash(password, 10);
-        db.beginTransaction((transactionError) => {
-            if (transactionError) return res.status(500).json({ success: false, message: "Could not start driver application" });
 
-            const rollback = (statusCode, message) => db.rollback(() => res.status(statusCode).json({ success: false, message }));
-            db.query("SELECT id FROM users WHERE LOWER(email) = ? LIMIT 1", [email], (lookupError, users) => {
-                if (lookupError) return rollback(500, "Could not check email address");
-                if (users.length) return rollback(409, "An account with this email already exists");
-
-                db.query(
-                    "INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, 'driver_pending')",
-                    [name, email, hashedPassword, phone],
-                    (userError, userResult) => {
-                        if (userError) return rollback(500, "Could not create driver account");
-
-                        db.query(
-                            "INSERT INTO drivers (user_id, license_no, status, is_online) VALUES (?, ?, 'pending', 0)",
-                            [userResult.insertId, licenseNo],
-                            (driverError, driverResult) => {
-                                if (driverError) return rollback(500, "Could not save driver application");
-
-                                db.query(
-                                    "INSERT INTO vehicles (driver_id, model, vehicle_number, vehicle_type, price_per_km) VALUES (?, ?, ?, ?, ?)",
-                                    [driverResult.insertId, model, vehicleNumber, vehicleType, pricePerKm],
-                                    (vehicleError) => {
-                                        if (vehicleError) return rollback(500, "Could not save vehicle details");
-
-                                        db.commit((commitError) => {
-                                            if (commitError) return db.rollback(() => res.status(500).json({ success: false, message: "Could not submit driver application" }));
-                                            return res.status(201).json({ success: true, message: "Driver application sent for admin approval" });
-                                        });
-                                    }
-                                );
-                            }
-                        );
-                    }
-                );
+        // Get a dedicated connection from the pool
+        connection = await new Promise((resolve, reject) => {
+            db.getConnection((err, conn) => {
+                if (err) return reject(err);
+                resolve(conn);
             });
         });
+
+        // Start transaction on the connection
+        await new Promise((resolve, reject) => {
+            connection.beginTransaction((err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
+
+        transactionStarted = true;
+
+        // Helper for connection queries
+        const query = (sql, values) =>
+            new Promise((resolve, reject) => {
+                connection.query(sql, values, (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results);
+                });
+            });
+
+        // Check whether email already exists
+        const users = await query(
+            "SELECT id FROM users WHERE LOWER(email) = ? LIMIT 1",
+            [email]
+        );
+
+        if (users.length > 0) {
+            const error = new Error(
+                "An account with this email already exists"
+            );
+            error.statusCode = 409;
+            throw error;
+        }
+
+        // Create user account
+        const userResult = await query(
+            `INSERT INTO users
+             (name, email, password, phone, role)
+             VALUES (?, ?, ?, ?, 'driver_pending')`,
+            [name, email, hashedPassword, phone]
+        );
+
+        // Create driver application
+        const driverResult = await query(
+            `INSERT INTO drivers
+             (user_id, license_no, status, is_online)
+             VALUES (?, ?, 'pending', 0)`,
+            [userResult.insertId, licenseNo]
+        );
+
+        // Save vehicle details
+        await query(
+            `INSERT INTO vehicles
+             (driver_id, model, vehicle_number, vehicle_type, price_per_km)
+             VALUES (?, ?, ?, ?, ?)`,
+            [
+                driverResult.insertId,
+                model,
+                vehicleNumber,
+                vehicleType,
+                pricePerKm
+            ]
+        );
+
+        // Commit all database changes
+        await new Promise((resolve, reject) => {
+            connection.commit((err) => {
+                if (err) return reject(err);
+                resolve();
+            });
+        });
+
+        transactionStarted = false;
+
+        return res.status(201).json({
+            success: true,
+            message: "Driver application sent for admin approval"
+        });
     } catch (error) {
-        console.error("Driver application password hashing failed:", error.message);
-        return res.status(500).json({ success: false, message: "Could not submit driver application" });
+        // Roll back incomplete database changes
+        if (connection && transactionStarted) {
+            await new Promise((resolve) => {
+                connection.rollback(() => resolve());
+            });
+            transactionStarted = false;
+        }
+
+        if (error.statusCode === 409) {
+            return res.status(409).json({
+                success: false,
+                message: error.message
+            });
+        }
+
+        console.error("Driver application failed:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Could not submit driver application"
+        });
+    } finally {
+        // Always return the connection to the pool
+        if (connection) {
+            connection.release();
+        }
     }
 };
 
