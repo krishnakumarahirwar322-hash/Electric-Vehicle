@@ -1,307 +1,5 @@
-// import React from "react";
-
-// import {
-//   Car,
-//   Wallet,
-//   UserCircle,
-//   WalletCards,
-// } from "lucide-react";
-
-// import "./Dashboard.css";
-// import "./Earnings.css";
-
-
-// const Earnings = () => {
-
-//   const earnings = {
-//     totalEarned: 0,
-//     wallet: 1635,
-//     today: 0,
-//     week: 0,
-//     month: 0,
-//   };
-
-
-//   return (
-//     <div className="driver-dashboard">
-
-
-//       {/* =========================================
-//           DESKTOP SIDEBAR
-//           SAME AS DASHBOARD
-//       ========================================= */}
-
-//       <aside className="driver-sidebar">
-
-//         <div className="driver-sidebar-logo">
-
-//           <div className="driver-sidebar-logo-icon">
-//             <Car size={22} />
-//           </div>
-
-//           <span>
-//             VoltRide
-//           </span>
-
-//         </div>
-
-
-//         <nav className="driver-sidebar-nav">
-
-//           {/* Drive */}
-
-//           <a
-//             href="/driver/dashboard"
-//             className="driver-sidebar-link"
-//           >
-//             <Car size={20} />
-
-//             <span>
-//               Drive
-//             </span>
-//           </a>
-
-
-//           {/* Earnings - ACTIVE */}
-
-//           <a
-//             href="/driver/earnings"
-//             className="driver-sidebar-link active"
-//           >
-//             <Wallet size={20} />
-
-//             <span>
-//               Earnings
-//             </span>
-//           </a>
-
-
-//           {/* Profile */}
-
-//           <a
-//             href="/driver/profile"
-//             className="driver-sidebar-link"
-//           >
-//             <UserCircle size={20} />
-
-//             <span>
-//               Profile
-//             </span>
-//           </a>
-
-//         </nav>
-
-//       </aside>
-
-
-
-//       {/* =========================================
-//           MAIN CONTENT
-//       ========================================= */}
-
-//       <main className="driver-main earnings-main">
-
-
-//         {/* =========================================
-//             EARNINGS HEADER
-//         ========================================= */}
-
-//         <section className="earnings-header">
-
-//           <h1>
-//             Earnings
-//           </h1>
-
-//           <p>
-//             Your income summary
-//           </p>
-
-//         </section>
-
-
-
-//         {/* =========================================
-//             TOTAL EARNED CARD
-//         ========================================= */}
-
-//         <section className="total-earned-card">
-
-//           <span className="total-earned-title">
-//             Total Earned
-//           </span>
-
-
-//           <h2>
-//             ₹{earnings.totalEarned}
-//           </h2>
-
-
-//           {/* Wallet */}
-
-//           <div className="earnings-wallet">
-
-//             <WalletCards size={13} />
-
-//             <span>
-//               Wallet: ₹{earnings.wallet}
-//             </span>
-
-//           </div>
-
-//         </section>
-
-
-
-//         {/* =========================================
-//             EARNING SUMMARY
-//         ========================================= */}
-
-//         <section className="earning-summary">
-
-
-//           {/* Today */}
-
-//           <div className="earning-summary-card">
-
-//             <span>
-//               Today
-//             </span>
-
-//             <strong>
-//               ₹{earnings.today}
-//             </strong>
-
-//           </div>
-
-
-
-//           {/* Week */}
-
-//           <div className="earning-summary-card">
-
-//             <span>
-//               Week
-//             </span>
-
-//             <strong>
-//               ₹{earnings.week}
-//             </strong>
-
-//           </div>
-
-
-
-//           {/* Month */}
-
-//           <div className="earning-summary-card">
-
-//             <span>
-//               Month
-//             </span>
-
-//             <strong>
-//               ₹{earnings.month}
-//             </strong>
-
-//           </div>
-
-
-//         </section>
-
-
-
-//         {/* =========================================
-//             RECENT RIDES
-//         ========================================= */}
-
-//         <section className="recent-rides-section">
-
-//           <h2>
-//             Recent Rides
-//           </h2>
-
-
-//           <div className="no-rides">
-//             No rides yet
-//           </div>
-
-//         </section>
-
-
-//       </main>
-
-
-
-//       {/* =========================================
-//           MOBILE BOTTOM NAVIGATION
-//           SAME AS DASHBOARD
-//       ========================================= */}
-
-//       <nav className="driver-mobile-nav">
-
-
-//         {/* Drive */}
-
-//         <a
-//           href="/driver/dashboard"
-//           className="driver-mobile-link"
-//         >
-
-//           <Car size={25} />
-
-//           <span>
-//             Drive
-//           </span>
-
-//         </a>
-
-
-
-//         {/* Earnings - ACTIVE */}
-
-//         <a
-//           href="/driver/earnings"
-//           className="driver-mobile-link active"
-//         >
-
-//           <Wallet size={25} />
-
-//           <span>
-//             Earnings
-//           </span>
-
-//         </a>
-
-
-
-//         {/* Profile */}
-
-//         <a
-//           href="/driver/profile"
-//           className="driver-mobile-link"
-//         >
-
-//           <UserCircle size={25} />
-
-//           <span>
-//             Profile
-//           </span>
-
-//         </a>
-
-
-//       </nav>
-
-
-//     </div>
-//   );
-// };
-
-
-// export default Earnings;
-
-
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // Link import kiya gaya hai
 import {
   Car,
   Wallet,
@@ -359,18 +57,18 @@ const Earnings = () => {
         </div>
 
         <nav className="driver-sidebar-nav">
-          <a href="/driver/dashboard" className="driver-sidebar-link">
+          <Link to="/driver/dashboard" className="driver-sidebar-link">
             <Car size={20} />
             <span>Drive</span>
-          </a>
-          <a href="/driver/earnings" className="driver-sidebar-link active">
+          </Link>
+          <Link to="/driver/earnings" className="driver-sidebar-link active">
             <Wallet size={20} />
             <span>Earnings</span>
-          </a>
-          <a href="/driver/profile" className="driver-sidebar-link">
+          </Link>
+          <Link to="/driver/profile" className="driver-sidebar-link">
             <UserCircle size={20} />
             <span>Profile</span>
-          </a>
+          </Link>
         </nav>
       </aside>
 
@@ -421,7 +119,6 @@ const Earnings = () => {
               {recentRides.map((ride) => (
                 <div key={ride.id} className="ride-item">
                   <div className="ride-info">
-                    {/* DB column names: pickup -> destination */}
                     <p className="ride-route">{ride.pickup} → {ride.destination}</p>
                     <span className="ride-status" style={{ color: '#059669', fontSize: '12px', textTransform: 'capitalize' }}>
                       {ride.status}
@@ -439,22 +136,21 @@ const Earnings = () => {
 
       {/* MOBILE BOTTOM NAVIGATION */}
       <nav className="driver-mobile-nav">
-        <a href="/driver/dashboard" className="driver-mobile-link">
+        <Link to="/driver/dashboard" className="driver-mobile-link">
           <Car size={25} />
           <span>Drive</span>
-        </a>
-        <a href="/driver/earnings" className="driver-mobile-link active">
+        </Link>
+        <Link to="/driver/earnings" className="driver-mobile-link active">
           <Wallet size={25} />
           <span>Earnings</span>
-        </a>
-        <a href="/driver/profile" className="driver-mobile-link">
+        </Link>
+        <Link to="/driver/profile" className="driver-mobile-link">
           <UserCircle size={25} />
           <span>Profile</span>
-        </a>
+        </Link>
       </nav>
     </div>
   );
 };
 
 export default Earnings;
-

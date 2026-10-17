@@ -15,7 +15,7 @@ import axios from "axios";
 import { clearAuthToken, getAuthToken } from "./authSession";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
 });
 
 // 1. Request Interceptor: Existing Token Attach Karne Ke Liye
