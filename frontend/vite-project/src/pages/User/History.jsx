@@ -9,16 +9,30 @@ const History = () => {
   const [loading, setLoading] = useState(true);
   const [payingRide, setPayingRide] = useState(null);
   const [loadError, setLoadError] = useState("");
+  const [paymentMessage, setPaymentMessage] = useState("");
 
   useEffect(() => {
     let active = true;
     const loadHistory = async () => {
       try {
-        const sessionId = new URLSearchParams(window.location.search).get("session_id");
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get("session_id");
+        const paymentCancelled = urlParams.get("payment");
+
         if (sessionId) {
-          await api.post("/api/payments/stripe-confirm", { session_id: sessionId });
+          try {
+            await api.post("/api/payments/stripe-confirm", { session_id: sessionId });
+            if (active) setPaymentMessage("✅ Payment Successful! Your ride has been paid.");
+          } catch (confirmErr) {
+            console.error("Payment confirmation error:", confirmErr);
+            if (active) setPaymentMessage("ℹ️ Payment completed. Updating ride details...");
+          }
+          window.history.replaceState({}, "", "/user/history");
+        } else if (paymentCancelled === "cancelled") {
+          if (active) setPaymentMessage("⚠️ Payment was cancelled.");
           window.history.replaceState({}, "", "/user/history");
         }
+
         const response = await api.get("/api/rides/my-rides");
         if (active) setRides(response.data?.rides || []);
       } catch (historyError) {
@@ -47,6 +61,21 @@ const History = () => {
         <h1>My Rides</h1>
         <p>{loadError ? "History unavailable" : `${rides.length} total trips`}</p>
       </header>
+      {paymentMessage && (
+        <div style={{
+          backgroundColor: paymentMessage.includes("✅") ? "#ecfdf5" : "#fef3c7",
+          color: paymentMessage.includes("✅") ? "#065f46" : "#92400e",
+          border: `1px solid ${paymentMessage.includes("✅") ? "#a7f3d0" : "#fde68a"}`,
+          borderRadius: "8px",
+          padding: "12px 16px",
+          margin: "12px 20px 0 20px",
+          textAlign: "center",
+          fontWeight: "600",
+          fontSize: "14px"
+        }}>
+          {paymentMessage}
+        </div>
+      )}
       <main className="history-content">
         {loading ? (
           <div className="history-empty"><p>Loading rides...</p></div>

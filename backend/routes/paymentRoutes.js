@@ -44,7 +44,16 @@ router.post("/stripe-checkout", authMiddleware, roleMiddleware("user"), (req, re
         if (!Number.isFinite(amount) || amount < 50) {
             return res.status(400).json({ success: false, message: "Ride fare is too low for Stripe Checkout" });
         }
-        const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
+        let clientOrigin = req.get("origin") || req.get("referer");
+        if (clientOrigin) {
+            try {
+                const parsed = new URL(clientOrigin);
+                clientOrigin = `${parsed.protocol}//${parsed.host}`;
+            } catch {
+                clientOrigin = null;
+            }
+        }
+        const frontendUrl = (clientOrigin || process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
         try {
             const session = await stripe.checkout.sessions.create({
                 mode: "payment",

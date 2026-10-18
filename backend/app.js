@@ -75,9 +75,9 @@ app.get(
     }
 );
 
-// ================= TEST ROUTE =================
+// ================= TEST / HEALTH ROUTE =================
 
-app.get("/", (req, res) => {
+app.get("/api/health", (req, res) => {
     res.json({
         success: true,
         message: "Electric Vehicle Booking API is running"
@@ -90,10 +90,15 @@ const distPath = path.join(__dirname, "../frontend/vite-project/dist");
 
 app.use(express.static(distPath));
 
+// Catch-all route to serve React index.html for all non-API paths (SPA refresh support)
 app.get("*", (req, res) => {
-    // Agar request API ki nahi hai, tabhi React ki index.html return karo
     if (!req.originalUrl.startsWith("/api")) {
-        res.sendFile(path.join(distPath, "index.html"));
+        res.sendFile(path.join(distPath, "index.html"), (err) => {
+            if (err) {
+                console.error("Error serving index.html:", err);
+                res.status(200).send("Frontend is loading or building, please refresh in a moment.");
+            }
+        });
     } else {
         res.status(404).json({ success: false, message: "API endpoint not found" });
     }
