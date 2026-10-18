@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
-import { clearAuthSession, getAuthToken } from "../../services/authSession";
+import { clearAuthSession } from "../../services/authSession";
+import api from "../../services/api";
 
 const AdminUsersList = () => {
   const navigate = useNavigate();
@@ -17,14 +18,10 @@ const AdminUsersList = () => {
 
   const fetchAccounts = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/admin/accounts", {
-        headers: {
-          Authorization: `Bearer ${getAuthToken()}`,
-        },
-      });
-      const result = await response.json();
+      const response = await api.get("/api/admin/accounts");
+      const result = response.data;
 
-      if (response.ok && result.success) {
+      if (result && result.success) {
         setData({
           users: result.users || [],
           drivers: result.drivers || [],

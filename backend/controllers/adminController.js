@@ -24,7 +24,7 @@ const getAllAccounts = (req, res) => {
 
         // Role filtering
         const users = data.filter(row => row.role === 'user');
-        const drivers = data.filter(row => row.role === 'driver');
+        const drivers = data.filter(row => row.role === 'driver' || row.role === 'driver_pending');
         const admins = data.filter(row => row.role === 'admin');
 
         res.status(200).json({
