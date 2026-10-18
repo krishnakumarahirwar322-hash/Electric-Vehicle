@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import L from "leaflet";
 
 import api from "../../services/api";
@@ -387,8 +388,8 @@ const Dashboard = () => {
 
           {/* DRIVE */}
 
-          <a
-            href="/driver/dashboard"
+          <Link
+            to="/driver/dashboard"
             className="driver-sidebar-link active"
           >
             <Car size={20} />
@@ -396,12 +397,12 @@ const Dashboard = () => {
             <span>
               Drive
             </span>
-          </a>
+          </Link>
 
           {/* EARNINGS */}
 
-          <a
-            href="/driver/earnings"
+          <Link
+            to="/driver/earnings"
             className="driver-sidebar-link"
           >
             <Wallet size={20} />
@@ -409,12 +410,12 @@ const Dashboard = () => {
             <span>
               Earnings
             </span>
-          </a>
+          </Link>
 
           {/* PROFILE */}
 
-          <a
-            href="/driver/profile"
+          <Link
+            to="/driver/profile"
             className="driver-sidebar-link"
           >
             <UserCircle size={20} />
@@ -422,7 +423,7 @@ const Dashboard = () => {
             <span>
               Profile
             </span>
-          </a>
+          </Link>
 
         </nav>
 
@@ -701,8 +702,8 @@ const Dashboard = () => {
 
         {/* DRIVE */}
 
-        <a
-          href="/driver/dashboard"
+        <Link
+          to="/driver/dashboard"
           className="driver-mobile-link active"
         >
 
@@ -712,12 +713,12 @@ const Dashboard = () => {
             Drive
           </span>
 
-        </a>
+        </Link>
 
         {/* EARNINGS */}
 
-        <a
-          href="/driver/earnings"
+        <Link
+          to="/driver/earnings"
           className="driver-mobile-link"
         >
 
@@ -727,12 +728,12 @@ const Dashboard = () => {
             Earnings
           </span>
 
-        </a>
+        </Link>
 
         {/* PROFILE */}
 
-        <a
-          href="/driver/profile"
+        <Link
+          to="/driver/profile"
           className="driver-mobile-link"
         >
 
@@ -742,7 +743,7 @@ const Dashboard = () => {
             Profile
           </span>
 
-        </a>
+        </Link>
 
       </nav>
 
